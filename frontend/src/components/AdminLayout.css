@@ -1,0 +1,105 @@
+body {
+    margin: 0;
+    background-color: #f0f2f5;
+    font-family: Arial, sans-serif;
+}
+
+.admin-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Kiểu dáng cho Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #1e293b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #334155;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    color: #38bdf8;
+}
+
+.sidebar-header p {
+    margin: 5px 0 0 0;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.sidebar-nav {
+    flex: 1;
+    /* Chiếm hết khoảng trống giữa header và footer */
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+
+.nav-item {
+    padding: 15px 25px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.nav-item:hover {
+    background-color: #334155;
+    color: white;
+    border-left: 4px solid #38bdf8;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid #334155;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.logout-btn:hover {
+    background-color: #dc2626;
+}
+
+/* Kiểu dáng cho nội dung chính */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-header {
+    height: 60px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.top-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.content-area {
+    padding: 20px;
+    overflow-y: auto;
+    /* Thêm thanh cuộn nếu nội dung quá dài */
+}
