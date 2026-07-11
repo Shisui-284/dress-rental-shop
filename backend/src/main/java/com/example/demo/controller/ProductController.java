@@ -24,8 +24,13 @@ public class ProductController {
 
     // API Thêm mới: POST http://localhost:8080/api/products
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.addProduct(product);
+    public org.springframework.http.ResponseEntity<?> createProduct(@RequestBody Product product) {
+        try {
+            Product saved = productService.addProduct(product);
+            return org.springframework.http.ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500).body("Lỗi Server: " + e.getMessage());
+        }
     }
 
     // Cập nhật sản phẩm

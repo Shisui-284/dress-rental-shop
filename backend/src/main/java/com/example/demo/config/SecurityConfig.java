@@ -26,9 +26,14 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Kích hoạt cho phép cấu hình CORS bên dưới
                 .csrf(csrf -> csrf.disable()) // Tắt bảo vệ CSRF vì chúng ta dùng API với React
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated() // Mọi request đều phải đăng nhập (có admin/123456)
+                        .requestMatchers("/uploads/**").permitAll() // Cho phép xem ảnh không cần đăng nhập
+                        .requestMatchers("/api/revenue/**", "/api/users/**").hasRole("ADMIN") // Chỉ ADMIN mới được xem doanh thu và quản lý nhân viên
+                        .anyRequest().authenticated() // Mọi request khác đều phải đăng nhập
                 )
-                .httpBasic(Customizer.withDefaults()); // Dùng chuẩn đăng nhập Basic
+                .httpBasic(basic -> basic.authenticationEntryPoint((request, response, authException) -> {
+                    // Tắt popup đăng nhập mặc định của trình duyệt
+                    response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                }));
 
         return http.build();
     }
@@ -39,7 +44,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         // Cho phép frontend ở cổng 5173 gọi sang
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true); // Cho phép gửi kèm thông tin đăng nhập
 

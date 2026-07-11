@@ -1,0 +1,95 @@
+.users-page {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.user-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.users-table th, .users-table td {
+    border: 1px solid #eee;
+    padding: 15px 12px;
+    text-align: left;
+}
+
+.users-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+.role-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.role-badge.ADMIN {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.role-badge.STAFF {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.status-badge.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.locked {
+    background-color: #eeeeee;
+    color: #616161;
+}
+
+.toggle-btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.toggle-btn.lock {
+    background-color: #ff9800;
+    color: white;
+}
+
+.toggle-btn.lock:hover {
+    background-color: #f57c00;
+}
+
+.toggle-btn.unlock {
+    background-color: #4caf50;
+    color: white;
+}
+
+.toggle-btn.unlock:hover {
+    background-color: #388e3c;
+}

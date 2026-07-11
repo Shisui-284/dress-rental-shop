@@ -30,7 +30,6 @@ public class ProductService {
         if (updatedProduct.getProductName() != null) existingProduct.setProductName(updatedProduct.getProductName());
         if (updatedProduct.getSize() != null) existingProduct.setSize(updatedProduct.getSize());
         if (updatedProduct.getColor() != null) existingProduct.setColor(updatedProduct.getColor());
-        if (updatedProduct.getPricePerDay() != null) existingProduct.setPricePerDay(updatedProduct.getPricePerDay());
         if (updatedProduct.getImageUrl() != null) existingProduct.setImageUrl(updatedProduct.getImageUrl());
         
         return productRepository.save(existingProduct);
@@ -40,6 +39,8 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         existingProduct.setIsDeleted(true);
+        // Đổi mã sản phẩm để mã cũ có thể được tái sử dụng cho váy mới
+        existingProduct.setProductCode(existingProduct.getProductCode() + "_del_" + System.currentTimeMillis());
         productRepository.save(existingProduct);
     }
 

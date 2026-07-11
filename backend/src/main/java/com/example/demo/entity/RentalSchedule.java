@@ -35,4 +35,13 @@ public class RentalSchedule {
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDate deletedAt;
+
+    @Column(name = "delivery_status")
+    private String deliveryStatus = "BOOKED"; // BOOKED (Đã đặt hàng), DELIVERED (Đã giao)
 }

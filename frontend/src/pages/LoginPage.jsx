@@ -41,38 +41,70 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <h2>Đăng Nhập Hệ Thống</h2>
-                <p className="subtitle">Quản lý Cửa Hàng Thuê Váy</p>
+        <div className="login-wrapper">
+            <div className="login-container">
+                {/* Left side: Image */}
+                <div className="login-image-section">
+                    <img src="/src/assets/login_dress_bg.png" alt="Elegant Dress" className="cover-image" />
+                </div>
 
-                {error && <div className="error-message">{error}</div>}
-
-                <form onSubmit={handleLogin}>
-                    <div className="form-group">
-                        <label>Tài khoản</label>
-                        <input
-                            type="text"
-                            placeholder="Nhập username (vd: admin)"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
+                {/* Right side: Form */}
+                <div className="login-form-section">
+                    <div className="form-header">
+                        <h2>Welcome back</h2>
+                        <p className="subtitle">Please enter your details to sign in</p>
                     </div>
 
-                    <div className="form-group">
-                        <label>Mật khẩu</label>
-                        <input
-                            type="password"
-                            placeholder="Nhập mật khẩu"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                    {error && <div className="error-message">{error}</div>}
 
-                    <button type="submit" className="login-btn">Đăng Nhập</button>
-                </form>
+                    <form onSubmit={handleLogin} className="login-form">
+                        <div className="form-group">
+                            <label>Username</label>
+                            <div className="input-with-icon">
+                                <span className="icon">👤</span>
+                                <input
+                                    type="text"
+                                    placeholder="Enter your username"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Password</label>
+                            <div className="input-with-icon">
+                                <span className="icon">🔒</span>
+                                <input
+                                    type="password"
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-options">
+                            <label className="remember-me">
+                                <input type="checkbox" /> Remember me
+                            </label>
+                            <a href="#" className="forgot-password">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" className="login-btn">Sign in</button>
+                    </form>
+
+                    <div className="social-login">
+                        <p>Or sign in with</p>
+                        <div className="social-buttons">
+                            <button className="social-btn google-btn">G</button>
+                            <button className="social-btn facebook-btn">f</button>
+                            <button className="social-btn apple-btn"></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

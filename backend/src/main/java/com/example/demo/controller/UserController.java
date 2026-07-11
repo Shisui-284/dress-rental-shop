@@ -35,4 +35,10 @@ public class UserController {
     public User toggleStatus(@PathVariable Integer id) {
         return userService.toggleUserStatus(id);
     }
+
+    // Đổi mật khẩu
+    @PutMapping("/{id}/change-password")
+    public User changePassword(@PathVariable Integer id, @RequestParam String newPassword) {
+        return userService.changePassword(id, newPassword);
+    }
 }

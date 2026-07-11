@@ -1,0 +1,479 @@
+/* ═══════════════════════════════════════
+   RENTALS PAGE – Premium Data Table Design
+   ═══════════════════════════════════════ */
+.rentals-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #1a1a2e;
+}
+
+/* ── Page Header ── */
+.rp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.rp-header-left h1 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #111;
+}
+
+.rp-header-left p {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.rp-new-btn {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.15s;
+}
+
+.rp-new-btn:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+/* ── Stats Row ── */
+.rp-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.rp-stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    border-left: 5px solid transparent;
+}
+
+.rp-stat-card.active-card  { border-left-color: #4f46e5; }
+.rp-stat-card.overdue-card { border-left-color: #ef4444; }
+.rp-stat-card.soon-card    { border-left-color: #f59e0b; }
+.rp-stat-card.done-card    { border-left-color: #10b981; }
+
+.stat-icon { font-size: 2rem; line-height: 1; }
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* ── Alert Banners ── */
+.alert-banner {
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+
+.overdue-banner {
+    background: #fff1f1;
+    border: 1px solid #fecaca;
+}
+
+.soon-banner {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+.alert-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #b91c1c;
+    margin-bottom: 10px;
+}
+
+.soon-banner .alert-title { color: #92400e; }
+
+.alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.alert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    background: rgba(255,255,255,0.6);
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #7f1d1d;
+}
+
+.soon-banner .alert-item { color: #78350f; }
+
+.alert-action-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 15px;
+}
+
+.alert-action-btn.danger  { background: #ef4444; color: white; }
+.alert-action-btn.warning { background: #f59e0b; color: white; }
+
+/* ── Create Form Card ── */
+.rp-form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid #e8e8f0;
+}
+
+.rp-form-card h3 {
+    margin: 0 0 24px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111;
+}
+
+.rp-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.rp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rp-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rp-field input,
+.rp-field select {
+    padding: 11px 14px;
+    border: 1.5px solid #e0e0ee;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #222;
+    background: #fafafe;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.rp-field input:focus,
+.rp-field select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    background: #fff;
+}
+
+.rp-submit-btn {
+    grid-column: span 2;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s;
+}
+
+.rp-submit-btn:hover { background: #4338ca; }
+
+/* ── Table Cards ── */
+.rp-table-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    border: 1px solid #e8e8f0;
+}
+
+.completed-card-section { border-top: 4px solid #10b981; }
+.deleted-card-section   { border-top: 4px solid #ef4444; }
+
+.rp-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.rp-table-header h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subtitle-chip {
+    font-size: 11px;
+    font-weight: 600;
+    background: #ecfdf5;
+    color: #059669;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.danger-chip {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.rp-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.rp-search-box span {
+    position: absolute;
+    left: 12px;
+    font-size: 15px;
+    color: #aaa;
+}
+
+.rp-search-box input {
+    padding: 9px 14px 9px 38px;
+    border: 1.5px solid #e0e0ee;
+    border-radius: 10px;
+    font-size: 13.5px;
+    color: #333;
+    background: #fafafe;
+    outline: none;
+    width: 280px;
+    transition: border-color 0.25s;
+}
+
+.rp-search-box input:focus {
+    border-color: #4f46e5;
+    background: #fff;
+}
+
+/* ── Table Styles ── */
+.rp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.rp-table thead tr { background: #f7f7fc; }
+
+.rp-table th {
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid #eeeeF8;
+}
+
+.rp-table td {
+    padding: 13px 14px;
+    border-bottom: 1px solid #f0f0f8;
+    color: #333;
+    vertical-align: middle;
+}
+
+.rp-table tbody tr:hover { background: #f9f9ff; }
+.rp-table tbody tr:last-child td { border-bottom: none; }
+
+/* Row states */
+.row-overdue          { background: #fff8f8 !important; }
+.row-overdue:hover    { background: #fff1f1 !important; }
+.row-deleted          { opacity: 0.65; }
+.row-deleted td       { text-decoration: line-through; }
+
+/* ── In-table elements ── */
+.order-id {
+    font-weight: 700;
+    color: #4f46e5;
+    font-size: 13px;
+}
+
+.order-id.deleted { color: #999; }
+
+.code-badge {
+    background: #ede9fe;
+    color: #5b21b6;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.due-date {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 13px;
+}
+
+.due-date.overdue {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.overdue-tag {
+    display: inline-block;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.amount {
+    font-weight: 600;
+    color: #111;
+}
+
+.delivery-toggle {
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.delivery-toggle.delivered { background: #dbeafe; color: #1d4ed8; }
+.delivery-toggle.booked    { background: #fef3c7; color: #92400e; }
+.delivery-toggle:hover     { filter: brightness(0.92); }
+
+.status-chip {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-chip.done { background: #d1fae5; color: #065f46; }
+
+.deleted-by {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ── Action buttons ── */
+.action-cell {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.act-btn {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.1s;
+    white-space: nowrap;
+}
+
+.act-btn:hover {
+    filter: brightness(0.9);
+    transform: translateY(-1px);
+}
+
+.act-btn.return { background: #d1fae5; color: #065f46; }
+.act-btn.cancel { background: #fee2e2; color: #b91c1c; }
+
+/* ── Pagination ── */
+.rp-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f8;
+}
+
+.rp-pagination button {
+    background: #f0f0f8;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4f46e5;
+    transition: background 0.2s;
+}
+
+.rp-pagination button:not(:disabled):hover {
+    background: #4f46e5;
+    color: white;
+}
+
+.rp-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.rp-pagination span {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+}
+
+/* ── Empty state ── */
+.rp-empty {
+    text-align: center;
+    color: #aaa;
+    padding: 40px;
+    font-style: italic;
+}

@@ -24,9 +24,6 @@ public class Product {
     @Column(nullable = false)
     private String color;
 
-    @Column(name = "price_per_day", nullable = false)
-    private java.math.BigDecimal pricePerDay;
-
     @Column(name = "image_url")
     private String imageUrl;
 

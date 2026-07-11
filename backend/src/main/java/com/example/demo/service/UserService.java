@@ -47,4 +47,12 @@ public class UserService {
         user.setIsActive(!user.getIsActive());
         return userRepository.save(user);
     }
+
+    // 4. Đổi mật khẩu
+    public User changePassword(Integer id, String newPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return userRepository.save(user);
+    }
 }
