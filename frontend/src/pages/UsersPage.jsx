@@ -113,11 +113,11 @@ export default function UsersPage() {
             {/* HEADER */}
             <div className="up-header">
                 <div>
-                    <h1>Account Management</h1>
-                    <p>Manage all staff and admin accounts in the system.</p>
+                    <h1>Quản lý tài khoản</h1>
+                    <p>Quản lý tất cả tài khoản nhân viên và quản trị viên trong hệ thống.</p>
                 </div>
                 <button className="up-new-btn" onClick={() => setShowForm(!showForm)}>
-                    {showForm ? '✕ Close' : '+ Add Account'}
+                    {showForm ? '✕ Đóng' : '+ Thêm tài khoản'}
                 </button>
             </div>
 
@@ -127,28 +127,28 @@ export default function UsersPage() {
                     <span className="up-stat-icon">👥</span>
                     <div>
                         <div className="up-stat-value">{users.length}</div>
-                        <div className="up-stat-label">Total Accounts</div>
+                        <div className="up-stat-label">Tổng tài khoản</div>
                     </div>
                 </div>
                 <div className="up-stat-card">
                     <span className="up-stat-icon">✅</span>
                     <div>
                         <div className="up-stat-value">{users.filter(u => u.isActive).length}</div>
-                        <div className="up-stat-label">Active</div>
+                        <div className="up-stat-label">Hoạt động</div>
                     </div>
                 </div>
                 <div className="up-stat-card">
                     <span className="up-stat-icon">🔒</span>
                     <div>
                         <div className="up-stat-value">{users.filter(u => !u.isActive).length}</div>
-                        <div className="up-stat-label">Locked</div>
+                        <div className="up-stat-label">Đã khóa</div>
                     </div>
                 </div>
                 <div className="up-stat-card">
                     <span className="up-stat-icon">🛡️</span>
                     <div>
                         <div className="up-stat-value">{users.filter(u => u.role === 'ADMIN').length}</div>
-                        <div className="up-stat-label">Admins</div>
+                        <div className="up-stat-label">Quản trị viên</div>
                     </div>
                 </div>
             </div>
@@ -156,24 +156,24 @@ export default function UsersPage() {
             {/* CREATE FORM */}
             {showForm && (
                 <div className="up-form-card">
-                    <h3>Create New Account</h3>
+                    <h3>Tạo tài khoản mới</h3>
                     <form className="up-form-grid" onSubmit={handleCreateUser}>
                         <div className="up-field">
-                            <label>Username</label>
-                            <input type="text" required placeholder="e.g. staff01" value={newUser.username}
+                            <label>Tên đăng nhập</label>
+                            <input type="text" required placeholder="VD: staff01" value={newUser.username}
                                 onChange={e => setNewUser({...newUser, username: e.target.value})} />
                         </div>
                         <div className="up-field">
-                            <label>Password</label>
-                            <input type="password" required placeholder="Min. 5 characters" value={newUser.password}
+                            <label>Mật khẩu</label>
+                            <input type="password" required placeholder="Tối thiểu 5 ký tự" value={newUser.password}
                                 onChange={e => setNewUser({...newUser, password: e.target.value})} />
                         </div>
                         <div className="up-field" style={{ gridColumn: 'span 2' }}>
-                            <label>Full Name</label>
-                            <input type="text" required placeholder="Staff full name" value={newUser.fullName}
+                            <label>Họ và tên</label>
+                            <input type="text" required placeholder="Họ tên nhân viên" value={newUser.fullName}
                                 onChange={e => setNewUser({...newUser, fullName: e.target.value})} />
                         </div>
-                        <button type="submit" className="up-submit-btn">Create Account</button>
+                        <button type="submit" className="up-submit-btn">Tạo tài khoản</button>
                     </form>
                 </div>
             )}
@@ -181,12 +181,12 @@ export default function UsersPage() {
             {/* TABLE CARD */}
             <div className="up-table-card">
                 <div className="up-table-header">
-                    <h2>All Accounts <span className="up-count-chip">{filtered.length} users</span></h2>
+                    <h2>Tất cả tài khoản <span className="up-count-chip">{filtered.length} người dùng</span></h2>
                     <div className="up-search-box">
                         <span>🔍</span>
                         <input
                             type="text"
-                            placeholder="Search by name or username..."
+                            placeholder="Tìm kiếm theo tên hoặc tên đăng nhập..."
                             value={searchQuery}
                             onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                         />
@@ -196,11 +196,11 @@ export default function UsersPage() {
                 <table className="up-table">
                     <thead>
                         <tr>
-                            <th>Account</th>
-                            <th>Username</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Tài khoản</th>
+                            <th>Tên đăng nhập</th>
+                            <th>Quyền</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -220,13 +220,13 @@ export default function UsersPage() {
                                 <td><span className="up-username-chip">@{u.username}</span></td>
                                 <td>
                                     <span className={`up-role-badge ${u.role === 'ADMIN' ? 'admin' : 'staff'}`}>
-                                        {u.role === 'ADMIN' ? '🛡️ Admin' : '👤 Staff'}
+                                        {u.role === 'ADMIN' ? '🛡️ Quản trị' : '👤 Nhân viên'}
                                     </span>
                                 </td>
                                 <td>
                                     <span className={`up-status-badge ${u.isActive ? 'active' : 'locked'}`}>
                                         <span className="up-status-dot"></span>
-                                        {u.isActive ? 'Active' : 'Locked'}
+                                        {u.isActive ? 'Hoạt động' : 'Đã khóa'}
                                     </span>
                                 </td>
                                 <td>
@@ -236,20 +236,20 @@ export default function UsersPage() {
                                                 className={`up-act-btn ${u.isActive ? 'lock-btn' : 'unlock-btn'}`}
                                                 onClick={() => handleToggleStatus(u.id, u.isActive)}
                                             >
-                                                {u.isActive ? '🔒 Lock' : '🔓 Unlock'}
+                                                {u.isActive ? '🔒 Khóa' : '🔓 Mở khóa'}
                                             </button>
                                         )}
                                         <button
                                             className="up-act-btn rename-btn"
                                             onClick={() => { setRenameModal({ userId: u.id, currentName: u.fullName }); setNewFullName(u.fullName); }}
                                         >
-                                            ✏️ Rename
+                                            ✏️ Đổi tên
                                         </button>
                                         <button
                                             className="up-act-btn pw-btn"
                                             onClick={() => { setPwModal({ userId: u.id, username: u.username }); setNewPassword(''); setShowPw(false); }}
                                         >
-                                            🔑 Password
+                                            🔑 Đổi MK
                                         </button>
                                     </div>
                                 </td>
@@ -259,14 +259,14 @@ export default function UsersPage() {
                 </table>
 
                 {currentUsers.length === 0 && (
-                    <p className="up-empty">No accounts match your search.</p>
+                    <p className="up-empty">Không có tài khoản nào khớp với tìm kiếm.</p>
                 )}
 
                 {totalPages > 1 && (
                     <div className="up-pagination">
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>‹ Prev</button>
+                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>‹ Trước</button>
                         <span>{currentPage} / {totalPages}</span>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Next ›</button>
+                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Sau ›</button>
                     </div>
                 )}
             </div>
@@ -276,18 +276,18 @@ export default function UsersPage() {
                 <div className="up-modal-overlay" onClick={() => setPwModal(null)}>
                     <div className="up-modal" onClick={e => e.stopPropagation()}>
                         <div className="up-modal-header">
-                            <h3>🔑 Reset Password</h3>
+                            <h3>🔑 Đặt lại mật khẩu</h3>
                             <button className="up-modal-close" onClick={() => setPwModal(null)}>✕</button>
                         </div>
-                        <p className="up-modal-sub">Account: <strong>@{pwModal.username}</strong></p>
+                        <p className="up-modal-sub">Tài khoản: <strong>@{pwModal.username}</strong></p>
                         <form onSubmit={handleChangePassword}>
                             <div className="up-field">
-                                <label>New Password</label>
+                                <label>Mật khẩu mới</label>
                                 <div className="up-pw-input-wrap">
                                     <input
                                         type={showPw ? 'text' : 'password'}
                                         required
-                                        placeholder="Enter new password (min. 5 chars)"
+                                        placeholder="Nhập mật khẩu mới (tối thiểu 5 ký tự)"
                                         value={newPassword}
                                         onChange={e => setNewPassword(e.target.value)}
                                     />
@@ -297,8 +297,8 @@ export default function UsersPage() {
                                 </div>
                             </div>
                             <div className="up-modal-actions">
-                                <button type="button" className="up-modal-cancel" onClick={() => setPwModal(null)}>Cancel</button>
-                                <button type="submit" className="up-modal-confirm">Confirm Reset</button>
+                                <button type="button" className="up-modal-cancel" onClick={() => setPwModal(null)}>Hủy</button>
+                                <button type="submit" className="up-modal-confirm">Xác nhận đổi</button>
                             </div>
                         </form>
                     </div>
@@ -310,24 +310,24 @@ export default function UsersPage() {
                 <div className="up-modal-overlay" onClick={() => setRenameModal(null)}>
                     <div className="up-modal" onClick={e => e.stopPropagation()}>
                         <div className="up-modal-header">
-                            <h3>✏️ Rename Account</h3>
+                            <h3>✏️ Đổi tên tài khoản</h3>
                             <button className="up-modal-close" onClick={() => setRenameModal(null)}>✕</button>
                         </div>
-                        <p className="up-modal-sub">Current name: <strong>{renameModal.currentName}</strong></p>
+                        <p className="up-modal-sub">Tên hiện tại: <strong>{renameModal.currentName}</strong></p>
                         <form onSubmit={handleRename}>
                             <div className="up-field">
-                                <label>New Full Name</label>
+                                <label>Họ tên mới</label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder="Enter new display name"
+                                    placeholder="Nhập tên hiển thị mới"
                                     value={newFullName}
                                     onChange={e => setNewFullName(e.target.value)}
                                 />
                             </div>
                             <div className="up-modal-actions">
-                                <button type="button" className="up-modal-cancel" onClick={() => setRenameModal(null)}>Cancel</button>
-                                <button type="submit" className="up-modal-confirm">Save Name</button>
+                                <button type="button" className="up-modal-cancel" onClick={() => setRenameModal(null)}>Hủy</button>
+                                <button type="submit" className="up-modal-confirm">Lưu tên</button>
                             </div>
                         </form>
                     </div>

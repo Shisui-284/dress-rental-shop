@@ -10,10 +10,10 @@ export default function RevenuePage() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    const fullName = localStorage.getItem('fullName') || 'Admin';
+    const fullName = localStorage.getItem('fullName') || 'Quản trị viên';
     const hour = new Date().getHours();
-    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-    const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const greeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
+    const MONTH_NAMES = ['Th.1','Th.2','Th.3','Th.4','Th.5','Th.6','Th.7','Th.8','Th.9','Th.10','Th.11','Th.12'];
 
     const getAuthHeaders = () => ({
         'Authorization': 'Basic ' + localStorage.getItem('authToken'),
@@ -51,7 +51,7 @@ export default function RevenuePage() {
     if (!detailsData) return (
         <div className="rv-loading">
             <div className="rv-spinner"></div>
-            <p>Loading revenue data...</p>
+            <p>Đang tải dữ liệu doanh thu...</p>
         </div>
     );
 
@@ -65,8 +65,8 @@ export default function RevenuePage() {
                     <thead>
                         <tr>
                             <th>{labelField}</th>
-                            <th>Revenue</th>
-                            <th style={{ width: '40%' }}>Distribution</th>
+                            <th>Doanh thu</th>
+                            <th style={{ width: '40%' }}>Tỷ lệ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,9 +86,9 @@ export default function RevenuePage() {
                 </table>
                 {totalPages > 1 && (
                     <div className="rv-pagination">
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>‹ Prev</button>
+                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>‹ Trước</button>
                         <span>{currentPage} / {totalPages}</span>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Next ›</button>
+                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Sau ›</button>
                     </div>
                 )}
             </>
@@ -102,7 +102,7 @@ export default function RevenuePage() {
             <div className="rv-greeting">
                 <div>
                     <h1>{greeting}, {fullName} 👋</h1>
-                    <p>Revenue overview for <strong>{MONTH_NAMES[month - 1]} {year}</strong></p>
+                    <p>Tổng quan doanh thu <strong>{MONTH_NAMES[month - 1]} {year}</strong></p>
                 </div>
                 <div className="rv-date-controls">
                     <select value={month} onChange={e => { setMonth(parseInt(e.target.value)); setCurrentPage(1); }}>
@@ -122,11 +122,11 @@ export default function RevenuePage() {
             <div className="rv-stats-row">
                 {/* Main big card with sparkline */}
                 <div className="rv-main-card">
-                    <p className="rv-card-label">Total Monthly Revenue</p>
+                    <p className="rv-card-label">Tổng doanh thu tháng</p>
                     <h2 className="rv-main-amount">{totalMonthly.toLocaleString('vi-VN')} ₫</h2>
                     {monthChange !== null && (
                         <p className={`rv-change ${parseFloat(monthChange) >= 0 ? 'up' : 'down'}`}>
-                            {parseFloat(monthChange) >= 0 ? '↑' : '↓'} {Math.abs(monthChange)}% compared to last month
+                            {parseFloat(monthChange) >= 0 ? '↑' : '↓'} {Math.abs(monthChange)}% so với tháng trước
                         </p>
                     )}
                     <div className="rv-sparkline">
@@ -147,14 +147,14 @@ export default function RevenuePage() {
                     <div className="rv-side-card yellow">
                         <span className="rv-side-icon">📅</span>
                         <div>
-                            <p className="rv-side-label">Yearly Total ({year})</p>
+                            <p className="rv-side-label">Tổng năm ({year})</p>
                             <p className="rv-side-amount">{totalYearly.toLocaleString('vi-VN')} ₫</p>
                         </div>
                     </div>
                     <div className="rv-side-card blue">
                         <span className="rv-side-icon">📊</span>
                         <div>
-                            <p className="rv-side-label">Monthly Average</p>
+                            <p className="rv-side-label">Trung bình tháng</p>
                             <p className="rv-side-amount">
                                 {(yearlyData.filter(m => m.revenue > 0).length > 0
                                     ? Math.round(totalYearly / yearlyData.filter(m => m.revenue > 0).length)
@@ -166,7 +166,7 @@ export default function RevenuePage() {
                     <div className="rv-side-card green">
                         <span className="rv-side-icon">💎</span>
                         <div>
-                            <p className="rv-side-label">Best Month</p>
+                            <p className="rv-side-label">Tháng cao nhất</p>
                             <p className="rv-side-amount">
                                 {yearlyData.length > 0
                                     ? MONTH_NAMES[yearlyData.reduce((a, b) => (a.revenue||0) > (b.revenue||0) ? a : b).month - 1]
@@ -180,12 +180,12 @@ export default function RevenuePage() {
             {/* BREAKDOWN TABLE */}
             <div className="rv-table-card">
                 <div className="rv-table-header">
-                    <h2>Revenue Breakdown</h2>
+                    <h2>Chi tiết doanh thu</h2>
                     <div className="rv-tabs">
                         {[
-                            { key: 'daily',  label: '📆 By Day' },
-                            { key: 'weekly', label: '📅 By Week' },
-                            { key: 'yearly', label: '📈 Full Year' },
+                            { key: 'daily',  label: '📆 Theo ngày' },
+                            { key: 'weekly', label: '📅 Theo tuần' },
+                            { key: 'yearly', label: '📈 Cả năm' },
                         ].map(tab => (
                             <button
                                 key={tab.key}
@@ -197,9 +197,9 @@ export default function RevenuePage() {
                         ))}
                     </div>
                 </div>
-                {viewMode === 'daily'  && renderTable(detailsData.daily,  'date',  'Day',   'Day ')}
-                {viewMode === 'weekly' && renderTable(detailsData.weekly, 'week',  'Week',  'Week ')}
-                {viewMode === 'yearly' && renderTable(yearlyData,          'month', 'Month', 'Month ')}
+                {viewMode === 'daily'  && renderTable(detailsData.daily,  'date',  'Ngày',   'Ngày ')}
+                {viewMode === 'weekly' && renderTable(detailsData.weekly, 'week',  'Tuần',  'Tuần ')}
+                {viewMode === 'yearly' && renderTable(yearlyData,          'month', 'Tháng', 'Tháng ')}
             </div>
         </div>
     );

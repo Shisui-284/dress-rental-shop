@@ -9,8 +9,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Cấu hình để trình duyệt có thể truy cập ảnh trong thư mục uploads
+        String currentPath = System.getProperty("user.dir");
+        String uploadsPath = currentPath;
+        if (currentPath.endsWith("backend")) {
+            uploadsPath = currentPath.substring(0, currentPath.length() - 8);
+        }
+        uploadsPath = uploadsPath + "/uploads/";
+        
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+                .addResourceLocations("file:" + uploadsPath);
     }
 }

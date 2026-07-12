@@ -34,12 +34,15 @@ export default function RentalsPage() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [totalAmount, setTotalAmount] = useState('');
+    const [customerName, setCustomerName] = useState('');
+    const [notes, setNotes] = useState('');
+    const [selectedRentalDetails, setSelectedRentalDetails] = useState(null);
 
     const { showAlert, showConfirmAsync } = useNotification();
 
     const getAuthHeaders = () => ({
         'Authorization': 'Basic ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json; charset=utf-8'
     });
 
     useEffect(() => {
@@ -55,9 +58,9 @@ export default function RentalsPage() {
         fetch('http://localhost:8080/api/products', { headers: getAuthHeaders() })
             .then(res => res.json())
             .then(data => {
-                // Chỉ lấy những sản phẩm đang không bị xóa và ở trạng thái AVAILABLE
+                // Cho phép lấy cả váy AVAILABLE và RENTED để nhận đặt hàng trước (Pre-order)
                 if (Array.isArray(data)) {
-                    setProducts(data.filter(p => p.status === 'AVAILABLE'));
+                    setProducts(data.filter(p => p.status === 'AVAILABLE' || p.status === 'RENTED'));
                 }
             })
             .catch(err => console.error(err));
@@ -93,6 +96,11 @@ export default function RentalsPage() {
     const handleCreateRental = async (e) => {
         e.preventDefault();
         
+        if (new Date(startDate) > new Date(endDate)) {
+            showAlert('Ngày nhận không được lớn hơn ngày trả!', 'error');
+            return;
+        }
+        
         // 1. Gọi API kiểm tra trùng lịch (Check Availability)
         try {
             const checkRes = await fetch(`http://localhost:8080/api/rentals/check-availability?productId=${selectedProduct}&startDate=${startDate}&endDate=${endDate}`, {
@@ -116,7 +124,9 @@ export default function RentalsPage() {
                     userId: userId,
                     startDate: startDate,
                     endDate: endDate,
-                    totalAmount: totalAmount
+                    totalAmount: totalAmount,
+                    customerName: customerName,
+                    notes: notes
                 })
             });
 
@@ -128,6 +138,8 @@ export default function RentalsPage() {
             setEndDate('');
             setTotalAmount('');
             setSelectedProduct('');
+            setCustomerName('');
+            setNotes('');
             fetchActiveRentals();
             fetchProducts(); // Cập nhật lại danh sách váy trống
 
@@ -195,18 +207,28 @@ export default function RentalsPage() {
     };
 
     // Pagination & Search logic
+    const removeAccents = (str) => {
+        return str ? str.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
+    };
+
+    const searchKeyword = removeAccents(searchQuery);
+    
     const filteredActiveRentals = rentals.filter(r => 
-        (r.product?.productCode || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-        (r.product?.productName || '').toLowerCase().includes(searchQuery.toLowerCase())
+        removeAccents(r.product?.productCode).includes(searchKeyword) || 
+        removeAccents(r.product?.productName).includes(searchKeyword) ||
+        removeAccents(r.customerName).includes(searchKeyword)
     );
 
     const activeTotalPages = Math.ceil(filteredActiveRentals.length / itemsPerPage);
     const activeStartIndex = (activePage - 1) * itemsPerPage;
     const currentActiveRentals = filteredActiveRentals.slice(activeStartIndex, activeStartIndex + itemsPerPage);
 
+    const completedSearchKeyword = removeAccents(completedSearchQuery);
+
     const filteredCompletedRentals = completedRentals.filter(r => 
-        (r.product?.productCode || '').toLowerCase().includes(completedSearchQuery.toLowerCase()) || 
-        (r.product?.productName || '').toLowerCase().includes(completedSearchQuery.toLowerCase()) ||
+        removeAccents(r.product?.productCode).includes(completedSearchKeyword) || 
+        removeAccents(r.product?.productName).includes(completedSearchKeyword) ||
+        removeAccents(r.customerName).includes(completedSearchKeyword) ||
         (r.receiveDate || '').includes(completedSearchQuery)
     );
 
@@ -224,11 +246,11 @@ export default function RentalsPage() {
             {/* ── PAGE HEADER ── */}
             <div className="rp-header">
                 <div className="rp-header-left">
-                    <h1>Rental Schedule</h1>
-                    <p>Manage all active and past dress rentals in one place.</p>
+                    <h1>Lịch Thuê Váy</h1>
+                    <p>Quản lý tất cả đơn thuê váy hiện tại và quá khứ.</p>
                 </div>
                 <button className="rp-new-btn" onClick={() => setShowForm(!showForm)}>
-                    {showForm ? '✕ Close' : '+ New Rental'}
+                    {showForm ? '✕ Đóng' : '+ Tạo đơn mới'}
                 </button>
             </div>
 
@@ -238,28 +260,28 @@ export default function RentalsPage() {
                     <span className="stat-icon">👗</span>
                     <div>
                         <div className="stat-value">{rentals.length}</div>
-                        <div className="stat-label">Currently Rented</div>
+                        <div className="stat-label">Đang cho thuê</div>
                     </div>
                 </div>
                 <div className="rp-stat-card overdue-card">
                     <span className="stat-icon">⚠️</span>
                     <div>
                         <div className="stat-value">{overdueRentals.length}</div>
-                        <div className="stat-label">Overdue</div>
+                        <div className="stat-label">Quá hạn</div>
                     </div>
                 </div>
                 <div className="rp-stat-card soon-card">
                     <span className="stat-icon">🔔</span>
                     <div>
                         <div className="stat-value">{dueSoonRentals.length}</div>
-                        <div className="stat-label">Due Today / Tomorrow</div>
+                        <div className="stat-label">Đến hạn hôm nay/ngày mai</div>
                     </div>
                 </div>
                 <div className="rp-stat-card done-card">
                     <span className="stat-icon">✅</span>
                     <div>
                         <div className="stat-value">{completedRentals.length}</div>
-                        <div className="stat-label">Completed (30 days)</div>
+                        <div className="stat-label">Đã hoàn thành (30 ngày)</div>
                     </div>
                 </div>
             </div>
@@ -296,30 +318,45 @@ export default function RentalsPage() {
             {/* ── CREATE RENTAL FORM ── */}
             {showForm && (
                 <div className="rp-form-card">
-                    <h3>Create New Rental Order</h3>
+                    <h3>Tạo Đơn Thuê Mới</h3>
                     <form className="rp-form-grid" onSubmit={handleCreateRental}>
                         <div className="rp-field">
-                            <label>Select Dress (Available)</label>
+                            <label>Chọn Váy (Cho phép đặt trước)</label>
                             <select required value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)}>
-                                <option value="" disabled>-- Choose a dress --</option>
+                                <option value="" disabled>-- Chọn một mẫu váy --</option>
                                 {products.map(p => (
-                                    <option key={p.id} value={p.id}>{p.productCode} – {p.productName}</option>
+                                    <option key={p.id} value={p.id}>
+                                        {p.productCode} – {p.productName} {p.status === 'RENTED' ? '(Đang có khách thuê)' : ''}
+                                    </option>
                                 ))}
                             </select>
+                            {selectedProduct && products.find(p => p.id === parseInt(selectedProduct)) && (
+                                <div style={{marginTop: '8px', fontSize: '13px', color: '#5b21b6', fontWeight: '500'}}>
+                                    Tiền cọc yêu cầu: {Number(products.find(p => p.id === parseInt(selectedProduct)).depositAmount || 0).toLocaleString('vi-VN')} ₫
+                                </div>
+                            )}
                         </div>
                         <div className="rp-field">
-                            <label>Pickup Date</label>
+                            <label>Ngày nhận váy</label>
                             <input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} />
                         </div>
                         <div className="rp-field">
-                            <label>Expected Return Date</label>
+                            <label>Ngày dự kiến trả</label>
                             <input type="date" required value={endDate} onChange={e => setEndDate(e.target.value)} />
                         </div>
                         <div className="rp-field">
-                            <label>Total Amount (VND)</label>
-                            <input type="number" required placeholder="Enter agreed price" value={totalAmount} onChange={e => setTotalAmount(e.target.value)} />
+                            <label>Tổng tiền (VNĐ)</label>
+                            <input type="number" required placeholder="Nhập giá thỏa thuận" value={totalAmount} onChange={e => setTotalAmount(e.target.value)} />
                         </div>
-                        <button type="submit" className="rp-submit-btn">Confirm Booking</button>
+                        <div className="rp-field">
+                            <label>Tên khách hàng</label>
+                            <input type="text" placeholder="Nhập tên khách hàng" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                        </div>
+                        <div className="rp-field">
+                            <label>Ghi chú</label>
+                            <input type="text" placeholder="SĐT, địa chỉ, lưu ý..." value={notes} onChange={e => setNotes(e.target.value)} />
+                        </div>
+                        <button type="submit" className="rp-submit-btn" style={{ gridColumn: '1 / -1' }}>Xác nhận Đặt</button>
                     </form>
                 </div>
             )}
@@ -327,12 +364,12 @@ export default function RentalsPage() {
             {/* ── ACTIVE RENTALS TABLE ── */}
             <div className="rp-table-card">
                 <div className="rp-table-header">
-                    <h2>Active Rentals</h2>
+                    <h2>Đơn đang thuê</h2>
                     <div className="rp-search-box">
                         <span>🔍</span>
                         <input
                             type="text"
-                            placeholder="Search by code or dress name..."
+                            placeholder="Tìm kiếm mã, tên váy, tên khách..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setActivePage(1); }}
                         />
@@ -340,48 +377,39 @@ export default function RentalsPage() {
                 </div>
 
                 {currentActiveRentals.length === 0
-                    ? <p className="rp-empty">No active rentals match your search.</p>
+                    ? <p className="rp-empty">Không có đơn nào khớp với tìm kiếm.</p>
                     : (
                         <table className="rp-table">
                             <thead>
                                 <tr>
-                                    <th>Order</th>
-                                    <th>Code</th>
-                                    <th>Dress Name</th>
-                                    <th>Pickup</th>
-                                    <th>Due Return</th>
-                                    <th>Delivery</th>
-                                    <th>Amount</th>
-                                    <th>Actions</th>
+                                    <th>Mã đơn</th>
+                                    <th>Mã váy</th>
+                                    <th>Tên váy</th>
+                                    <th>Tên khách</th>
+                                    <th>Ngày nhận</th>
+                                    <th>Hạn trả</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentActiveRentals.map(r => {
                                     const isOverdue = r.expectedReturnDate < todayStr;
                                     return (
-                                        <tr key={r.id} className={isOverdue ? 'row-overdue' : ''}>
+                                        <tr key={r.id} className={`${isOverdue ? 'row-overdue' : ''} clickable-row`} onClick={() => setSelectedRentalDetails(r)}>
                                             <td><span className="order-id">#{r.id}</span></td>
-                                            <td><span className="code-badge">{r.product?.productCode}</span></td>
+                                            <td>
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                                    {r.product?.imageUrl ? <img src={`http://localhost:8080${r.product.imageUrl}`} alt="Dress" style={{width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0'}} /> : <div style={{width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0'}} />}
+                                                    <span className="code-badge">{r.product?.productCode}</span>
+                                                </div>
+                                            </td>
                                             <td>{r.product?.productName}</td>
+                                            <td><strong style={{color: '#1e293b'}}>{r.customerName || '—'}</strong></td>
                                             <td>{r.receiveDate}</td>
                                             <td>
                                                 <span className={isOverdue ? 'due-date overdue' : 'due-date'}>
                                                     {r.expectedReturnDate}
-                                                    {isOverdue && <span className="overdue-tag">Overdue</span>}
+                                                    {isOverdue && <span className="overdue-tag">Quá hạn</span>}
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className={`delivery-toggle ${r.deliveryStatus === 'DELIVERED' ? 'delivered' : 'booked'}`}
-                                                    onClick={() => handleToggleDelivery(r.id)}
-                                                >
-                                                    {r.deliveryStatus === 'DELIVERED' ? '📦 Delivered' : '⏳ Booked'}
-                                                </button>
-                                            </td>
-                                            <td><span className="amount">{Number(r.totalAmount).toLocaleString('vi-VN')} ₫</span></td>
-                                            <td className="action-cell">
-                                                <button className="act-btn return" onClick={() => handleReturnDress(r.id)}>✓ Returned</button>
-                                                <button className="act-btn cancel" onClick={() => handleDeleteRental(r.id)}>✕ Cancel</button>
                                             </td>
                                         </tr>
                                     );
@@ -393,9 +421,9 @@ export default function RentalsPage() {
 
                 {activeTotalPages > 1 && (
                     <div className="rp-pagination">
-                        <button disabled={activePage === 1} onClick={() => setActivePage(c => c - 1)}>‹ Prev</button>
+                        <button disabled={activePage === 1} onClick={() => setActivePage(c => c - 1)}>‹ Trước</button>
                         <span>{activePage} / {activeTotalPages}</span>
-                        <button disabled={activePage === activeTotalPages} onClick={() => setActivePage(c => c + 1)}>Next ›</button>
+                        <button disabled={activePage === activeTotalPages} onClick={() => setActivePage(c => c + 1)}>Sau ›</button>
                     </div>
                 )}
             </div>
@@ -403,12 +431,12 @@ export default function RentalsPage() {
             {/* ── COMPLETED RENTALS TABLE ── */}
             <div className="rp-table-card completed-card-section">
                 <div className="rp-table-header">
-                    <h2>Completed Rentals <span className="subtitle-chip">Last 30 days</span></h2>
+                    <h2>Đơn đã hoàn thành <span className="subtitle-chip">30 ngày qua</span></h2>
                     <div className="rp-search-box">
                         <span>🔍</span>
                         <input
                             type="text"
-                            placeholder="Search by code, name or date..."
+                            placeholder="Tìm kiếm mã, tên váy, khách hoặc ngày..."
                             value={completedSearchQuery}
                             onChange={(e) => { setCompletedSearchQuery(e.target.value); setCompletedPage(1); }}
                         />
@@ -416,30 +444,33 @@ export default function RentalsPage() {
                 </div>
 
                 {currentCompletedRentals.length === 0
-                    ? <p className="rp-empty">No completed rentals match your search.</p>
+                    ? <p className="rp-empty">Không có đơn hoàn thành nào khớp với tìm kiếm.</p>
                     : (
                         <table className="rp-table">
                             <thead>
                                 <tr>
-                                    <th>Order</th>
-                                    <th>Code</th>
-                                    <th>Dress Name</th>
-                                    <th>Pickup</th>
-                                    <th>Actual Return</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
+                                    <th>Mã đơn</th>
+                                    <th>Mã váy</th>
+                                    <th>Tên váy</th>
+                                    <th>Tên khách</th>
+                                    <th>Ngày nhận</th>
+                                    <th>Ngày trả</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentCompletedRentals.map(r => (
-                                    <tr key={r.id}>
+                                    <tr key={r.id} className="clickable-row" onClick={() => setSelectedRentalDetails(r)}>
                                         <td><span className="order-id">#{r.id}</span></td>
-                                        <td><span className="code-badge">{r.product?.productCode}</span></td>
+                                        <td>
+                                            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                                {r.product?.imageUrl ? <img src={`http://localhost:8080${r.product.imageUrl}`} alt="Dress" style={{width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0'}} /> : <div style={{width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0'}} />}
+                                                <span className="code-badge">{r.product?.productCode}</span>
+                                            </div>
+                                        </td>
                                         <td>{r.product?.productName}</td>
+                                        <td><strong style={{color: '#1e293b'}}>{r.customerName || '—'}</strong></td>
                                         <td>{r.receiveDate}</td>
                                         <td>{r.actualReturnDate}</td>
-                                        <td><span className="amount">{Number(r.totalAmount).toLocaleString('vi-VN')} ₫</span></td>
-                                        <td><span className="status-chip done">✓ Returned</span></td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -449,9 +480,9 @@ export default function RentalsPage() {
 
                 {completedTotalPages > 1 && (
                     <div className="rp-pagination">
-                        <button disabled={completedPage === 1} onClick={() => setCompletedPage(c => c - 1)}>‹ Prev</button>
+                        <button disabled={completedPage === 1} onClick={() => setCompletedPage(c => c - 1)}>‹ Trước</button>
                         <span>{completedPage} / {completedTotalPages}</span>
-                        <button disabled={completedPage === completedTotalPages} onClick={() => setCompletedPage(c => c + 1)}>Next ›</button>
+                        <button disabled={completedPage === completedTotalPages} onClick={() => setCompletedPage(c => c + 1)}>Sau ›</button>
                     </div>
                 )}
             </div>
@@ -460,17 +491,17 @@ export default function RentalsPage() {
             {role === 'ADMIN' && deletedRentals.length > 0 && (
                 <div className="rp-table-card deleted-card-section">
                     <div className="rp-table-header">
-                        <h2>Deleted Orders <span className="subtitle-chip danger-chip">Admin View</span></h2>
+                        <h2>Đơn Đã Xóa <span className="subtitle-chip danger-chip">Góc nhìn Admin</span></h2>
                     </div>
                     <table className="rp-table">
                         <thead>
                             <tr>
-                                <th>Order</th>
-                                <th>Code</th>
-                                <th>Dress Name</th>
-                                <th>Pickup</th>
-                                <th>Amount</th>
-                                <th>Deleted By</th>
+                                <th>Mã đơn</th>
+                                <th>Mã váy</th>
+                                <th>Tên váy</th>
+                                <th>Ngày nhận</th>
+                                <th>Tiền</th>
+                                <th>Người xóa</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -489,11 +520,77 @@ export default function RentalsPage() {
 
                     {deletedTotalPages > 1 && (
                         <div className="rp-pagination">
-                            <button disabled={deletedPage === 1} onClick={() => setDeletedPage(c => c - 1)}>‹ Prev</button>
+                            <button disabled={deletedPage === 1} onClick={() => setDeletedPage(c => c - 1)}>‹ Trước</button>
                             <span>{deletedPage} / {deletedTotalPages}</span>
-                            <button disabled={deletedPage === deletedTotalPages} onClick={() => setDeletedPage(c => c + 1)}>Next ›</button>
+                            <button disabled={deletedPage === deletedTotalPages} onClick={() => setDeletedPage(c => c + 1)}>Sau ›</button>
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* ── RENTAL DETAILS MODAL ── */}
+            {selectedRentalDetails && (
+                <div className="modal-overlay" onClick={() => setSelectedRentalDetails(null)}>
+                    <div className="modal-content details-modal" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>
+                                Chi Tiết Đơn Hàng #{selectedRentalDetails.id}
+                                {selectedRentalDetails.actualReturnDate && <span className="status-chip done" style={{marginLeft: '10px', fontSize: '11px'}}>✓ Đã hoàn thành</span>}
+                            </h2>
+                            <button className="close-btn" onClick={() => setSelectedRentalDetails(null)}>✕</button>
+                        </div>
+                        <div className="modal-body" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
+                                {selectedRentalDetails.product?.imageUrl ? <img src={`http://localhost:8080${selectedRentalDetails.product.imageUrl}`} alt="Dress" style={{width: '70px', height: '70px', borderRadius: '8px', objectFit: 'cover'}} /> : <div style={{width: '70px', height: '70px', backgroundColor: '#e2e8f0', borderRadius: '8px'}} />}
+                                <div>
+                                    <strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>{selectedRentalDetails.product?.productName}</strong>
+                                    <span className="code-badge">{selectedRentalDetails.product?.productCode}</span>
+                                </div>
+                            </div>
+                            
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                <div>
+                                    <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '4px' }}>👤 Khách hàng</span>
+                                    <strong style={{ fontSize: '15px' }}>{selectedRentalDetails.customerName || 'Không có'}</strong>
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '4px' }}>📝 Ghi chú</span>
+                                    <span style={{ fontSize: '14px' }}>{selectedRentalDetails.notes || 'Không có'}</span>
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '4px' }}>📅 Lịch trình</span>
+                                    <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                                        Nhận: {selectedRentalDetails.receiveDate}<br/>
+                                        Trả: {selectedRentalDetails.actualReturnDate ? selectedRentalDetails.actualReturnDate : selectedRentalDetails.expectedReturnDate}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '4px' }}>💰 Tài chính</span>
+                                    <strong style={{ fontSize: '15px', color: '#059669', display: 'block' }}>Tổng tiền: {Number(selectedRentalDetails.totalAmount || 0).toLocaleString('vi-VN')} ₫</strong>
+                                    <span style={{ fontSize: '13px', color: '#5b21b6' }}>Cọc yêu cầu: {Number(selectedRentalDetails.product?.depositAmount || 0).toLocaleString('vi-VN')} ₫</span>
+                                </div>
+                            </div>
+
+                            {!selectedRentalDetails.actualReturnDate && (
+                                <div style={{ marginTop: '5px', paddingTop: '15px', borderTop: '1px solid #e2e8f0' }}>
+                                    <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px' }}>📦 Trạng thái giao hàng</span>
+                                    <button
+                                        className={`delivery-toggle ${selectedRentalDetails.deliveryStatus === 'DELIVERED' ? 'delivered' : 'booked'}`}
+                                        onClick={() => { handleToggleDelivery(selectedRentalDetails.id); setSelectedRentalDetails({...selectedRentalDetails, deliveryStatus: selectedRentalDetails.deliveryStatus === 'DELIVERED' ? 'BOOKED' : 'DELIVERED'}); }}
+                                        style={{ width: '100%', padding: '10px' }}
+                                    >
+                                        {selectedRentalDetails.deliveryStatus === 'DELIVERED' ? '📦 Đã giao hàng' : '⏳ Đang chờ lấy / Đã đặt'}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-footer" style={{ display: 'flex', gap: '10px', padding: '20px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}>
+                            {!selectedRentalDetails.actualReturnDate && (
+                                <button className="act-btn return" style={{ flex: 1, padding: '12px' }} onClick={() => { handleReturnDress(selectedRentalDetails.id); setSelectedRentalDetails(null); }}>✓ Khách Đã Trả (Hoàn thành)</button>
+                            )}
+                            <button className="act-btn cancel" style={{ flex: 1, padding: '12px' }} onClick={() => { handleDeleteRental(selectedRentalDetails.id); setSelectedRentalDetails(null); }}>✕ Hủy Đơn Hàng</button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

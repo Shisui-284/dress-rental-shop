@@ -7,7 +7,7 @@ export const useNotification = () => useContext(NotificationContext);
 
 export const NotificationProvider = ({ children }) => {
     const [alertState, setAlertState] = useState({ isOpen: false, message: '', type: 'info' });
-    const [confirmState, setConfirmState] = useState({ isOpen: false, title: '', message: '', confirmText: 'CONFIRM', resolve: null });
+    const [confirmState, setConfirmState] = useState({ isOpen: false, title: '', message: '', confirmText: 'XÁC NHẬN', resolve: null });
 
     const showAlert = useCallback((message, type = 'info') => {
         setAlertState({ isOpen: true, message, type });
@@ -19,7 +19,7 @@ export const NotificationProvider = ({ children }) => {
         }
     }, []);
 
-    const showConfirmAsync = useCallback((title, message, confirmText = 'CONFIRM') => {
+    const showConfirmAsync = useCallback((title, message, confirmText = 'XÁC NHẬN') => {
         return new Promise((resolve) => {
             setConfirmState({ isOpen: true, title, message, confirmText, resolve });
         });
@@ -29,7 +29,7 @@ export const NotificationProvider = ({ children }) => {
         if (confirmState.resolve) {
             confirmState.resolve(result);
         }
-        setConfirmState({ isOpen: false, title: '', message: '', confirmText: 'CONFIRM', resolve: null });
+        setConfirmState({ isOpen: false, title: '', message: '', confirmText: 'XÁC NHẬN', resolve: null });
     };
 
     const closeAlert = () => setAlertState({ ...alertState, isOpen: false });
@@ -63,7 +63,7 @@ export const NotificationProvider = ({ children }) => {
                         <h3 className="notif-title">{confirmState.title}</h3>
                         <p className="notif-message">{confirmState.message}</p>
                         <div className="notif-actions">
-                            <button className="notif-cancel" onClick={() => handleConfirmClose(false)}>CANCEL</button>
+                            <button className="notif-cancel" onClick={() => handleConfirmClose(false)}>HỦY</button>
                             <button className="notif-confirm" onClick={() => handleConfirmClose(true)}>
                                 {confirmState.confirmText}
                             </button>

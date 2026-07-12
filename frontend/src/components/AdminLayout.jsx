@@ -5,7 +5,7 @@ export default function AdminLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const role = localStorage.getItem('userRole');
-    const fullName = localStorage.getItem('fullName') || 'Admin';
+    const fullName = localStorage.getItem('fullName') || 'Quản trị viên';
 
     const handleLogout = () => {
         localStorage.clear();
@@ -33,7 +33,7 @@ export default function AdminLayout() {
                     <div className="brand-icon">👗</div>
                     <div className="brand-text">
                         <span className="brand-name">Dress Shop</span>
-                        <span className="brand-sub">Management</span>
+                        <span className="brand-sub">Quản lý</span>
                     </div>
                 </div>
 
@@ -43,14 +43,14 @@ export default function AdminLayout() {
                     <div className="profile-info">
                         <span className="profile-name">{fullName}</span>
                         <span className={`profile-role ${role === 'ADMIN' ? 'role-admin' : 'role-staff'}`}>
-                            {role === 'ADMIN' ? '🛡️ Admin' : '👤 Staff'}
+                            {role === 'ADMIN' ? '🛡️ Quản trị' : '👤 Nhân viên'}
                         </span>
                     </div>
                 </div>
 
                 {/* NAVIGATION */}
                 <nav className="sidebar-nav">
-                    <p className="nav-section-label">MENU</p>
+                    <p className="nav-section-label">DANH MỤC</p>
                     {navItems.map(item => {
                         const isActive = location.pathname === item.to;
                         return (
@@ -80,7 +80,7 @@ export default function AdminLayout() {
                     <div className="top-header-left">
                         <div className="page-breadcrumb">
                             {navItems.find(n => n.to === location.pathname)?.icon}&nbsp;
-                            {navItems.find(n => n.to === location.pathname)?.label || 'Dashboard'}
+                            {navItems.find(n => n.to === location.pathname)?.label || 'Bảng điều khiển'}
                         </div>
                     </div>
                     <div className="top-header-right">

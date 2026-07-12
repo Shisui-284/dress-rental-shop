@@ -13,7 +13,9 @@ export default function ProductsPage() {
         productName: '',
         size: '',
         color: '',
-        imageUrl: ''
+        imageUrl: '',
+        rentalPrice: '',
+        depositAmount: ''
     });
 
     const { showAlert, showConfirmAsync } = useNotification();
@@ -78,10 +80,17 @@ export default function ProductsPage() {
 
     const handleAddProduct = (e) => {
         e.preventDefault();
+        
+        const payload = {
+            ...newProduct,
+            rentalPrice: Number(newProduct.rentalPrice) || 0,
+            depositAmount: Number(newProduct.depositAmount) || 0
+        };
+
         fetch('http://localhost:8080/api/products', {
             method: 'POST',
             headers: getAuthHeaders(),
-            body: JSON.stringify(newProduct)
+            body: JSON.stringify(payload)
         })
         .then(async res => {
             if (!res.ok) {
@@ -93,7 +102,7 @@ export default function ProductsPage() {
         .then(() => {
             fetchProducts();
             setShowForm(false);
-            setNewProduct({ productCode: '', productName: '', size: '', color: '', imageUrl: '' });
+            setNewProduct({ productCode: '', productName: '', size: '', color: '', imageUrl: '', rentalPrice: '', depositAmount: '' });
             showAlert('Lưu sản phẩm thành công!', 'success');
         })
         .catch(err => {
@@ -142,12 +151,12 @@ export default function ProductsPage() {
                 <img src="/src/assets/products_hero_bg.png" alt="Elegant Hero" className="hero-bg" />
                 <div className="hero-overlay"></div>
                 <div className="hero-content">
-                    <h1>Where Shadows Dance</h1>
-                    <p>Discover the art of the evening. Gowns and dresses crafted to capture the mystery and allure of the night.</p>
+                    <h1>Vũ điệu của bóng tối</h1>
+                    <p>Khám phá nghệ thuật của màn đêm. Những bộ trang phục được chế tác để tôn vinh vẻ đẹp bí ẩn và quyến rũ.</p>
                     <button className="explore-btn" onClick={() => {
                         document.getElementById('collections').scrollIntoView({ behavior: 'smooth' });
                     }}>
-                        Explore The Collections
+                        Khám phá Bộ sưu tập
                     </button>
                 </div>
             </div>
@@ -155,8 +164,8 @@ export default function ProductsPage() {
             {/* Main Content Section */}
             <div id="collections" className="collections-section">
                 <div className="section-title">
-                    <h2>An Ode to the Night</h2>
-                    <p>Curated selections for your most unforgettable moments</p>
+                    <h2>Khúc ca màn đêm</h2>
+                    <p>Những lựa chọn tinh tế nhất cho những khoảnh khắc khó quên</p>
                 </div>
 
                 {/* Toolbar */}
@@ -165,55 +174,61 @@ export default function ProductsPage() {
                         <span className="search-icon">🔍</span>
                         <input 
                             type="text" 
-                            placeholder="Search by name or code..." 
+                            placeholder="Tìm kiếm theo tên hoặc mã váy..." 
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                         />
                     </div>
                     <button className="new-product-btn" onClick={() => setShowForm(!showForm)}>
-                        {showForm ? 'Close Form' : '+ Add New Piece'}
+                        {showForm ? 'Đóng form' : '+ Thêm mẫu váy mới'}
                     </button>
                 </div>
 
                 {showForm && (
                     <form className="elegant-form" onSubmit={handleAddProduct}>
                         <div className="form-grid">
-                            <input type="text" placeholder="Product Code (e.g. V01)" required value={newProduct.productCode} onChange={e => setNewProduct({...newProduct, productCode: e.target.value})} />
-                            <input type="text" placeholder="Dress Name" required value={newProduct.productName} onChange={e => setNewProduct({...newProduct, productName: e.target.value})} />
-                            <input type="text" placeholder="Size (S, M, L)" required value={newProduct.size} onChange={e => setNewProduct({...newProduct, size: e.target.value})} />
-                            <input type="text" placeholder="Color" required value={newProduct.color} onChange={e => setNewProduct({...newProduct, color: e.target.value})} />
+                            <input type="text" placeholder="Mã váy (VD: V01)" required value={newProduct.productCode} onChange={e => setNewProduct({...newProduct, productCode: e.target.value})} />
+                            <input type="text" placeholder="Tên váy" required value={newProduct.productName} onChange={e => setNewProduct({...newProduct, productName: e.target.value})} />
+                            <input type="text" placeholder="Kích cỡ (S, M, L)" required value={newProduct.size} onChange={e => setNewProduct({...newProduct, size: e.target.value})} />
+                            <input type="text" placeholder="Màu sắc" required value={newProduct.color} onChange={e => setNewProduct({...newProduct, color: e.target.value})} />
+                            <input type="number" placeholder="Giá thuê (VNĐ)" required value={newProduct.rentalPrice} onChange={e => setNewProduct({...newProduct, rentalPrice: e.target.value})} />
+                            <input type="number" placeholder="Tiền cọc (VNĐ)" required value={newProduct.depositAmount} onChange={e => setNewProduct({...newProduct, depositAmount: e.target.value})} />
                         </div>
                         <div className="file-upload-wrapper">
                             <input type="file" accept="image/*" onChange={handleFileChange} id="file-upload" className="file-input" />
                             <label htmlFor="file-upload" className="file-label">
-                                📸 Upload Image
+                                📸 Tải ảnh lên
                             </label>
                             {newProduct.imageUrl && <img src={`http://localhost:8080${newProduct.imageUrl}`} alt="preview" className="image-preview" />}
                         </div>
-                        <button type="submit" className="submit-product-btn">Publish to Collection</button>
+                        <button type="submit" className="submit-product-btn">Đưa vào Bộ sưu tập</button>
                     </form>
                 )}
 
                 <div className="product-grid">
-                    {currentProducts.length === 0 ? <p className="no-results">No dresses found in the collection.</p> : null}
+                    {currentProducts.length === 0 ? <p className="no-results">Không tìm thấy mẫu váy nào.</p> : null}
                     {currentProducts.map(p => (
                         <div key={p.id} className="elegant-product-card">
                             <div className="card-image-wrapper">
                                 <img src={p.imageUrl ? `http://localhost:8080${p.imageUrl}` : 'https://via.placeholder.com/400x600?text=No+Image'} alt={p.productName} />
                                 <div className="card-overlay">
                                     <button className="delete-btn" onClick={() => handleDeleteProduct(p.id)}>
-                                        Remove Piece
+                                        Xóa mẫu váy
                                     </button>
                                 </div>
                             </div>
                             <div className="card-details">
                                 <h3>{p.productName}</h3>
                                 <div className="card-meta">
-                                    <span>Code: {p.productCode}</span>
+                                    <span>Mã: {p.productCode}</span>
                                     <span>{p.color} | {p.size}</span>
                                 </div>
+                                <div className="card-meta" style={{ marginTop: '4px', color: '#111', fontWeight: '600' }}>
+                                    <span>Thuê: {Number(p.rentalPrice || 0).toLocaleString('vi-VN')} ₫</span>
+                                    <span>Cọc: {Number(p.depositAmount || 0).toLocaleString('vi-VN')} ₫</span>
+                                </div>
                                 <div className={`status-indicator ${p.status === 'AVAILABLE' ? 'available' : 'rented'}`}>
-                                    {p.status === 'AVAILABLE' ? 'Available for Rent' : 'Currently Rented'}
+                                    {p.status === 'AVAILABLE' ? 'Có sẵn để thuê' : 'Đang cho thuê'}
                                 </div>
                             </div>
                         </div>
@@ -222,9 +237,9 @@ export default function ProductsPage() {
                 
                 {totalPages > 1 && (
                     <div className="pagination">
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>Prev</button>
-                        <span>Page {currentPage} of {totalPages}</span>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Next</button>
+                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>Trước</button>
+                        <span>Trang {currentPage} / {totalPages}</span>
+                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Sau</button>
                     </div>
                 )}
             </div>

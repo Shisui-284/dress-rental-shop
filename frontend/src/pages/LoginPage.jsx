@@ -51,20 +51,20 @@ export default function LoginPage() {
                 {/* Right side: Form */}
                 <div className="login-form-section">
                     <div className="form-header">
-                        <h2>Welcome back</h2>
-                        <p className="subtitle">Please enter your details to sign in</p>
+                        <h2>Chào mừng trở lại</h2>
+                        <p className="subtitle">Vui lòng nhập thông tin để đăng nhập</p>
                     </div>
 
                     {error && <div className="error-message">{error}</div>}
 
                     <form onSubmit={handleLogin} className="login-form">
                         <div className="form-group">
-                            <label>Username</label>
+                            <label>Tên đăng nhập</label>
                             <div className="input-with-icon">
                                 <span className="icon">👤</span>
                                 <input
                                     type="text"
-                                    placeholder="Enter your username"
+                                    placeholder="Nhập tên đăng nhập"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
@@ -73,12 +73,12 @@ export default function LoginPage() {
                         </div>
 
                         <div className="form-group">
-                            <label>Password</label>
+                            <label>Mật khẩu</label>
                             <div className="input-with-icon">
                                 <span className="icon">🔒</span>
                                 <input
                                     type="password"
-                                    placeholder="Enter your password"
+                                    placeholder="Nhập mật khẩu"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
@@ -88,16 +88,16 @@ export default function LoginPage() {
 
                         <div className="form-options">
                             <label className="remember-me">
-                                <input type="checkbox" /> Remember me
+                                <input type="checkbox" /> Ghi nhớ đăng nhập
                             </label>
-                            <a href="#" className="forgot-password">Forgot password?</a>
+                            <a href="#" className="forgot-password">Quên mật khẩu?</a>
                         </div>
 
-                        <button type="submit" className="login-btn">Sign in</button>
+                        <button type="submit" className="login-btn">Đăng nhập</button>
                     </form>
 
                     <div className="social-login">
-                        <p>Or sign in with</p>
+                        <p>Hoặc đăng nhập bằng</p>
                         <div className="social-buttons">
                             <button className="social-btn google-btn">G</button>
                             <button className="social-btn facebook-btn">f</button>

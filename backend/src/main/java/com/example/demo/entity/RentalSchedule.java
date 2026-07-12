@@ -44,4 +44,12 @@ public class RentalSchedule {
 
     @Column(name = "delivery_status")
     private String deliveryStatus = "BOOKED"; // BOOKED (Đã đặt hàng), DELIVERED (Đã giao)
+
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "customer_name")
+    private String customerName;
+
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "notes")
+    private String notes;
 }

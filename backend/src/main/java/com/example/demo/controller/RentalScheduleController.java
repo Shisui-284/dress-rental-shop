@@ -29,6 +29,8 @@ public class RentalScheduleController {
         Integer userId = (Integer) payload.get("userId");
         LocalDate startDate = LocalDate.parse((String) payload.get("startDate"));
         LocalDate endDate = LocalDate.parse((String) payload.get("endDate"));
+        String customerName = (String) payload.get("customerName");
+        String notes = (String) payload.get("notes");
         
         // Chuyển đổi totalAmount từ JSON sang BigDecimal
         java.math.BigDecimal totalAmount;
@@ -39,7 +41,7 @@ public class RentalScheduleController {
             totalAmount = new java.math.BigDecimal((String) amountObj);
         }
         
-        return rentalService.createRental(productId, userId, startDate, endDate, totalAmount);
+        return rentalService.createRental(productId, userId, startDate, endDate, totalAmount, customerName, notes);
     }
 
     @PatchMapping("/{id}/complete")

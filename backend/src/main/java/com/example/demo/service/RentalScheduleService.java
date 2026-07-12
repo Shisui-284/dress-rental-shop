@@ -30,7 +30,17 @@ public class RentalScheduleService {
         return count == 0;
     }
 
-    public RentalSchedule createRental(Integer productId, Integer userId, LocalDate startDate, LocalDate endDate, BigDecimal totalAmount) {
+    private void updateProductStatus(Product product) {
+        long activeCount = rentalScheduleRepository.countOverlappingRentals(product.getId(), LocalDate.now(), LocalDate.now());
+        if (activeCount > 0) {
+            product.setStatus("RENTED");
+        } else {
+            product.setStatus("AVAILABLE");
+        }
+        productRepository.save(product);
+    }
+
+    public RentalSchedule createRental(Integer productId, Integer userId, LocalDate startDate, LocalDate endDate, BigDecimal totalAmount, String customerName, String notes) {
         if (!checkAvailability(productId, startDate, endDate)) {
             throw new RuntimeException("Product is not available for the selected dates");
         }
@@ -47,12 +57,15 @@ public class RentalScheduleService {
         rental.setReceiveDate(startDate);
         rental.setExpectedReturnDate(endDate);
         rental.setTotalAmount(totalAmount);
+        rental.setCustomerName(customerName);
+        rental.setNotes(notes);
         
-        // Update product status
-        product.setStatus("RENTED");
-        productRepository.save(product);
+        rental = rentalScheduleRepository.save(rental);
         
-        return rentalScheduleRepository.save(rental);
+        // Cập nhật trạng thái sản phẩm dựa trên việc hôm nay có đang được thuê hay không
+        updateProductStatus(product);
+        
+        return rental;
     }
     
     public RentalSchedule completeRental(Integer rentalId) {
@@ -60,12 +73,12 @@ public class RentalScheduleService {
             .orElseThrow(() -> new RuntimeException("Rental not found"));
             
         rental.setActualReturnDate(LocalDate.now());
+        rental = rentalScheduleRepository.save(rental);
         
-        Product product = rental.getProduct();
-        product.setStatus("AVAILABLE");
-        productRepository.save(product);
+        // Cập nhật lại trạng thái nếu không còn đơn nào hôm nay
+        updateProductStatus(rental.getProduct());
         
-        return rentalScheduleRepository.save(rental);
+        return rental;
     }
     
     public List<RentalSchedule> getActiveRentals() {
@@ -95,12 +108,11 @@ public class RentalScheduleService {
             
         rental.setIsDeleted(true);
         rental.setDeletedAt(LocalDate.now()); // Ghi nhận ngày xóa
+        rental = rentalScheduleRepository.save(rental);
         
-        // If it was still active, revert product to AVAILABLE
+        // If it was still active, revert product to AVAILABLE if no other rentals today
         if (rental.getActualReturnDate() == null) {
-            Product product = rental.getProduct();
-            product.setStatus("AVAILABLE");
-            productRepository.save(product);
+            updateProductStatus(rental.getProduct());
         }
         
         // Tự động dọn dẹp các đơn bị xóa quá 7 ngày
@@ -110,7 +122,7 @@ public class RentalScheduleService {
             System.err.println("Lỗi khi dọn dẹp đơn cũ: " + e.getMessage());
         }
         
-        return rentalScheduleRepository.save(rental);
+        return rental;
     }
     
     public List<RentalSchedule> getDeletedRentals() {
