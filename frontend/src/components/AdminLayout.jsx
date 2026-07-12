@@ -1,47 +1,92 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import './AdminLayout.css';
 
 export default function AdminLayout() {
     const navigate = useNavigate();
-    // Lấy thông tin role và tên từ bộ nhớ
+    const location = useLocation();
     const role = localStorage.getItem('userRole');
-    const fullName = localStorage.getItem('fullName');
+    const fullName = localStorage.getItem('fullName') || 'Admin';
 
     const handleLogout = () => {
-        localStorage.clear(); // Xóa sạch mọi thứ khi đăng xuất
+        localStorage.clear();
         navigate('/login');
     };
+
+    const navItems = [
+        { to: '/products', icon: '👗', label: 'Sản Phẩm' },
+        { to: '/rentals',  icon: '📅', label: 'Lịch Thuê' },
+        ...(role === 'ADMIN' ? [
+            { to: '/revenue', icon: '💰', label: 'Doanh Thu' },
+            { to: '/users',   icon: '👥', label: 'Nhân Viên' },
+        ] : []),
+    ];
+
+    // Avatar initials
+    const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
     return (
         <div className="admin-container">
             <aside className="sidebar">
-                <div className="sidebar-header">
-                    <h2>Dress Shop</h2>
-                    <p>Xin chào, {fullName}</p>
-                    <p style={{ color: '#fbbf24', fontSize: '12px' }}>Quyền: {role}</p>
+
+                {/* LOGO / BRAND */}
+                <div className="sidebar-brand">
+                    <div className="brand-icon">👗</div>
+                    <div className="brand-text">
+                        <span className="brand-name">Dress Shop</span>
+                        <span className="brand-sub">Management</span>
+                    </div>
                 </div>
 
-                <nav className="sidebar-nav">
-                    <Link to="/products" className="nav-item">👗 Quản lý Sản Phẩm</Link>
-                    <Link to="/rentals" className="nav-item">📅 Lịch Thuê Váy</Link>
+                {/* USER PROFILE CARD */}
+                <div className="sidebar-profile">
+                    <div className="profile-avatar">{initials}</div>
+                    <div className="profile-info">
+                        <span className="profile-name">{fullName}</span>
+                        <span className={`profile-role ${role === 'ADMIN' ? 'role-admin' : 'role-staff'}`}>
+                            {role === 'ADMIN' ? '🛡️ Admin' : '👤 Staff'}
+                        </span>
+                    </div>
+                </div>
 
-                    {/* Cú pháp React: CHỈ KHI role là ADMIN thì mới render 2 tab này */}
-                    {role === 'ADMIN' && (
-                        <>
-                            <Link to="/revenue" className="nav-item">💰 Thống kê Doanh Thu</Link>
-                            <Link to="/users" className="nav-item">👥 Quản lý Nhân Viên</Link>
-                        </>
-                    )}
+                {/* NAVIGATION */}
+                <nav className="sidebar-nav">
+                    <p className="nav-section-label">MENU</p>
+                    {navItems.map(item => {
+                        const isActive = location.pathname === item.to;
+                        return (
+                            <Link
+                                key={item.to}
+                                to={item.to}
+                                className={`nav-item ${isActive ? 'active' : ''}`}
+                            >
+                                <span className="nav-icon">{item.icon}</span>
+                                <span className="nav-label">{item.label}</span>
+                                {isActive && <span className="nav-active-dot"></span>}
+                            </Link>
+                        );
+                    })}
                 </nav>
 
+                {/* FOOTER */}
                 <div className="sidebar-footer">
-                    <button onClick={handleLogout} className="logout-btn">Đăng xuất</button>
+                    <button onClick={handleLogout} className="logout-btn">
+                        <span>🚪</span> Đăng xuất
+                    </button>
                 </div>
             </aside>
 
             <main className="main-content">
                 <header className="top-header">
-                    <h3>Hệ thống quản lý cửa hàng</h3>
+                    <div className="top-header-left">
+                        <div className="page-breadcrumb">
+                            {navItems.find(n => n.to === location.pathname)?.icon}&nbsp;
+                            {navItems.find(n => n.to === location.pathname)?.label || 'Dashboard'}
+                        </div>
+                    </div>
+                    <div className="top-header-right">
+                        <div className="header-avatar">{initials}</div>
+                        <span className="header-name">{fullName}</span>
+                    </div>
                 </header>
                 <div className="content-area">
                     <Outlet />

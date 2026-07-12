@@ -55,4 +55,12 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
+
+    // 5. Đổi tên hiển thị (fullName)
+    public User renameUser(Integer id, String newFullName) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
+        user.setFullName(newFullName);
+        return userRepository.save(user);
+    }
 }

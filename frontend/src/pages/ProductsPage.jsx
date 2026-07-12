@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNotification } from '../components/NotificationContext';
 import './ProductsPage.css';
 
 export default function ProductsPage() {
@@ -14,6 +15,8 @@ export default function ProductsPage() {
         color: '',
         imageUrl: ''
     });
+
+    const { showAlert, showConfirmAsync } = useNotification();
     
     // Lấy token từ localStorage
     const getAuthHeaders = () => {
@@ -66,10 +69,10 @@ export default function ProductsPage() {
             });
             const data = await res.json();
             setNewProduct({ ...newProduct, imageUrl: data.imageUrl });
-            alert('Tải ảnh thành công!');
+            showAlert('Tải ảnh thành công!', 'success');
         } catch (err) {
             console.error('Lỗi khi tải ảnh:', err);
-            alert('Lỗi tải ảnh!');
+            showAlert('Lỗi tải ảnh!', 'error');
         }
     };
 
@@ -91,16 +94,21 @@ export default function ProductsPage() {
             fetchProducts();
             setShowForm(false);
             setNewProduct({ productCode: '', productName: '', size: '', color: '', imageUrl: '' });
-            alert('Lưu sản phẩm thành công!');
+            showAlert('Lưu sản phẩm thành công!', 'success');
         })
         .catch(err => {
             console.error('Lưu thất bại:', err);
-            alert('Lưu sản phẩm thất bại! Nguyên nhân: ' + err.message + '\n(Có thể do Mã Váy bị trùng hoặc thiếu dữ liệu)');
+            showAlert('Lưu sản phẩm thất bại! Nguyên nhân: ' + err.message + '\n(Có thể do Mã Váy bị trùng hoặc thiếu dữ liệu)', 'error');
         });
     };
 
     const handleDeleteProduct = async (productId) => {
-        if (!window.confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa sản phẩm này? Sản phẩm sẽ bị ẩn khỏi hệ thống.')) return;
+        const confirmed = await showConfirmAsync(
+            'Xác nhận xóa',
+            'CẢNH BÁO: Bạn có chắc chắn muốn xóa sản phẩm này? Sản phẩm sẽ bị ẩn khỏi hệ thống.',
+            'XÓA'
+        );
+        if (!confirmed) return;
         
         try {
             const res = await fetch(`http://localhost:8080/api/products/${productId}`, {
@@ -109,11 +117,11 @@ export default function ProductsPage() {
             });
             if (!res.ok) throw new Error('Không thể xóa sản phẩm');
             
-            alert('Đã xóa sản phẩm thành công!');
+            showAlert('Đã xóa sản phẩm thành công!', 'success');
             fetchProducts();
         } catch (error) {
             console.error(error);
-            alert('Lỗi xóa sản phẩm: ' + error.message);
+            showAlert('Lỗi xóa sản phẩm: ' + error.message, 'error');
         }
     };
 

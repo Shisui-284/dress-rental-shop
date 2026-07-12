@@ -1,0 +1,138 @@
+.notif-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: notifFadeIn 0.25s ease;
+}
+
+@keyframes notifFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.notif-box {
+    background: #f7f7fc;
+    border-radius: 20px;
+    padding: 36px 40px;
+    width: 460px;
+    max-width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+    animation: notifSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes notifSlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.notif-close-x {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: #e0e0ee;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.notif-close-x:hover {
+    background: #d0d0e0;
+    color: #111;
+}
+
+.notif-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+    line-height: 1;
+}
+
+.notif-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+}
+
+.notif-message {
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    color: #666;
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+}
+
+/* ── Alert Specific ── */
+.notif-ok-btn {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.notif-ok-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+}
+
+/* ── Confirm Specific ── */
+.notif-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.notif-actions button {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.notif-cancel {
+    background: #e5e5ec;
+    color: #555;
+}
+
+.notif-cancel:hover {
+    background: #d4d4e0;
+    color: #111;
+}
+
+.notif-confirm {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+}
+
+.notif-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(79, 70, 229, 0.4);
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNotification } from '../components/NotificationContext';
 import './RentalsPage.css';
 
 export default function RentalsPage() {
@@ -33,6 +34,8 @@ export default function RentalsPage() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [totalAmount, setTotalAmount] = useState('');
+
+    const { showAlert, showConfirmAsync } = useNotification();
 
     const getAuthHeaders = () => ({
         'Authorization': 'Basic ' + localStorage.getItem('authToken'),
@@ -98,7 +101,7 @@ export default function RentalsPage() {
             const isAvailable = await checkRes.json();
             
             if (!isAvailable) {
-                alert('Rất tiếc! Váy này đã có người đặt trong khoảng thời gian trên. Vui lòng chọn ngày khác.');
+                showAlert('Rất tiếc! Váy này đã có người đặt trong khoảng thời gian trên. Vui lòng chọn ngày khác.', 'error');
                 return;
             }
 
@@ -119,7 +122,7 @@ export default function RentalsPage() {
 
             if (!createRes.ok) throw new Error('Không thể tạo lịch thuê');
             
-            alert('Tạo lịch thuê thành công!');
+            showAlert('Tạo lịch thuê thành công!', 'success');
             setShowForm(false);
             setStartDate('');
             setEndDate('');
@@ -130,12 +133,13 @@ export default function RentalsPage() {
 
         } catch (error) {
             console.error(error);
-            alert('Lỗi tạo lịch thuê: ' + error.message);
+            showAlert('Lỗi tạo lịch thuê: ' + error.message, 'error');
         }
     };
 
     const handleReturnDress = async (rentalId) => {
-        if (!window.confirm('Xác nhận khách đã trả váy này?')) return;
+        const isConfirmed = await showConfirmAsync('Xác nhận', 'Xác nhận khách đã trả váy này?', 'Xác nhận');
+        if (!isConfirmed) return;
         
         try {
             const res = await fetch(`http://localhost:8080/api/rentals/${rentalId}/complete`, {
@@ -144,13 +148,13 @@ export default function RentalsPage() {
             });
             if (!res.ok) throw new Error('Không thể cập nhật trạng thái trả váy');
             
-            alert('Đã xác nhận trả váy thành công!');
+            showAlert('Đã xác nhận trả váy thành công!', 'success');
             fetchActiveRentals();
             fetchCompletedRentals();
             fetchProducts(); // Váy quay lại trạng thái AVAILABLE
         } catch (error) {
             console.error(error);
-            alert('Lỗi: ' + error.message);
+            showAlert('Lỗi: ' + error.message, 'error');
         }
     };
 
@@ -165,12 +169,13 @@ export default function RentalsPage() {
             fetchActiveRentals(); // Cập nhật lại UI ngay lập tức
         } catch (error) {
             console.error(error);
-            alert('Lỗi: ' + error.message);
+            showAlert('Lỗi: ' + error.message, 'error');
         }
     };
 
     const handleDeleteRental = async (rentalId) => {
-        if (!window.confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA đơn này? Đơn bị xóa sẽ không được tính vào doanh thu.')) return;
+        const isConfirmed = await showConfirmAsync('Cảnh báo', 'Bạn có chắc chắn muốn XÓA đơn này? Đơn bị xóa sẽ không được tính vào doanh thu.', 'Xóa đơn');
+        if (!isConfirmed) return;
         
         try {
             const res = await fetch(`http://localhost:8080/api/rentals/${rentalId}`, {
@@ -179,13 +184,13 @@ export default function RentalsPage() {
             });
             if (!res.ok) throw new Error('Không thể xóa đơn');
             
-            alert('Đã xóa đơn thành công!');
+            showAlert('Đã xóa đơn thành công!', 'success');
             fetchActiveRentals();
             fetchProducts();
             if (role === 'ADMIN') fetchDeletedRentals();
         } catch (error) {
             console.error(error);
-            alert('Lỗi xóa đơn: ' + error.message);
+            showAlert('Lỗi xóa đơn: ' + error.message, 'error');
         }
     };
 

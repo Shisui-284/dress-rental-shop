@@ -41,4 +41,10 @@ public class UserController {
     public User changePassword(@PathVariable Integer id, @RequestParam String newPassword) {
         return userService.changePassword(id, newPassword);
     }
+
+    // Đổi tên hiển thị
+    @PutMapping("/{id}/rename")
+    public User renameUser(@PathVariable Integer id, @RequestParam String newFullName) {
+        return userService.renameUser(id, newFullName);
+    }
 }
