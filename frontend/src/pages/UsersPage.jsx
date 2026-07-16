@@ -28,7 +28,7 @@ export default function UsersPage() {
 
     const fetchUsers = async () => {
         try {
-            const res = await fetch('http://localhost:8080/api/users', { headers: getAuthHeaders() });
+            const res = await fetch('https://dress-rental-backend.onrender.com/api/users', { headers: getAuthHeaders() });
             if (!res.ok) throw new Error('Failed');
             setUsers(await res.json());
         } catch (e) { console.error(e); }
@@ -37,7 +37,7 @@ export default function UsersPage() {
     const handleCreateUser = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:8080/api/users', {
+            const res = await fetch('https://dress-rental-backend.onrender.com/api/users', {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify(newUser)
@@ -55,7 +55,7 @@ export default function UsersPage() {
         const isConfirmed = await showConfirmAsync(`Xác nhận ${actionText}`, `Bạn có chắc chắn muốn ${actionText} tài khoản này không?`, 'Xác nhận');
         if (!isConfirmed) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}/toggle-status`, {
+            const res = await fetch(`https://dress-rental-backend.onrender.com/api/users/${userId}/toggle-status`, {
                 method: 'PUT', headers: getAuthHeaders()
             });
             if (!res.ok) throw new Error('Thất bại');
@@ -69,7 +69,7 @@ export default function UsersPage() {
         if (newPassword.length < 5) { showAlert('Mật khẩu phải từ 5 ký tự trở lên.', 'error'); return; }
         try {
             const res = await fetch(
-                `http://localhost:8080/api/users/${pwModal.userId}/change-password?newPassword=${encodeURIComponent(newPassword)}`,
+                `https://dress-rental-backend.onrender.com/api/users/${pwModal.userId}/change-password?newPassword=${encodeURIComponent(newPassword)}`,
                 { method: 'PUT', headers: getAuthHeaders() }
             );
             if (!res.ok) throw new Error('Thất bại');
@@ -84,7 +84,7 @@ export default function UsersPage() {
         if (!newFullName.trim()) { showAlert('Tên không được để trống.', 'error'); return; }
         try {
             const res = await fetch(
-                `http://localhost:8080/api/users/${renameModal.userId}/rename?newFullName=${encodeURIComponent(newFullName.trim())}`,
+                `https://dress-rental-backend.onrender.com/api/users/${renameModal.userId}/rename?newFullName=${encodeURIComponent(newFullName.trim())}`,
                 { method: 'PUT', headers: getAuthHeaders() }
             );
             if (!res.ok) throw new Error('Thất bại');
@@ -97,7 +97,7 @@ export default function UsersPage() {
 
     // Avatar initials helper
     const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
-    const AVATAR_COLORS = ['#4f46e5','#0891b2','#059669','#d97706','#dc2626','#7c3aed','#db2777'];
+    const AVATAR_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed', '#db2777'];
     const getAvatarColor = (id) => AVATAR_COLORS[id % AVATAR_COLORS.length];
 
     const filtered = users.filter(u =>
@@ -161,17 +161,17 @@ export default function UsersPage() {
                         <div className="up-field">
                             <label>Tên đăng nhập</label>
                             <input type="text" required placeholder="VD: staff01" value={newUser.username}
-                                onChange={e => setNewUser({...newUser, username: e.target.value})} />
+                                onChange={e => setNewUser({ ...newUser, username: e.target.value })} />
                         </div>
                         <div className="up-field">
                             <label>Mật khẩu</label>
                             <input type="password" required placeholder="Tối thiểu 5 ký tự" value={newUser.password}
-                                onChange={e => setNewUser({...newUser, password: e.target.value})} />
+                                onChange={e => setNewUser({ ...newUser, password: e.target.value })} />
                         </div>
                         <div className="up-field" style={{ gridColumn: 'span 2' }}>
                             <label>Họ và tên</label>
                             <input type="text" required placeholder="Họ tên nhân viên" value={newUser.fullName}
-                                onChange={e => setNewUser({...newUser, fullName: e.target.value})} />
+                                onChange={e => setNewUser({ ...newUser, fullName: e.target.value })} />
                         </div>
                         <button type="submit" className="up-submit-btn">Tạo tài khoản</button>
                     </form>

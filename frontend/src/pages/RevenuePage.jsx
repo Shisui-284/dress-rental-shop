@@ -13,7 +13,7 @@ export default function RevenuePage() {
     const fullName = localStorage.getItem('fullName') || 'Quản trị viên';
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
-    const MONTH_NAMES = ['Th.1','Th.2','Th.3','Th.4','Th.5','Th.6','Th.7','Th.8','Th.9','Th.10','Th.11','Th.12'];
+    const MONTH_NAMES = ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'];
 
     const getAuthHeaders = () => ({
         'Authorization': 'Basic ' + localStorage.getItem('authToken'),
@@ -27,7 +27,7 @@ export default function RevenuePage() {
 
     const fetchDetails = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/revenue/details?year=${year}&month=${month}`, { headers: getAuthHeaders() });
+            const res = await fetch(`https://dress-rental-backend.onrender.com/api/revenue/details?year=${year}&month=${month}`, { headers: getAuthHeaders() });
             const data = await res.json();
             if (res.ok) {
                 setDetailsData(data);
@@ -40,7 +40,7 @@ export default function RevenuePage() {
 
     const fetchYearly = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/revenue/yearly?year=${year}`, { headers: getAuthHeaders() });
+            const res = await fetch(`https://dress-rental-backend.onrender.com/api/revenue/yearly?year=${year}`, { headers: getAuthHeaders() });
             const data = await res.json();
             if (Array.isArray(data)) {
                 setYearlyData(data);
@@ -51,11 +51,11 @@ export default function RevenuePage() {
         } catch (e) { console.error(e); }
     };
 
-    const totalMonthly   = detailsData?.totalRevenue || 0;
-    const totalYearly    = yearlyData.reduce((s, m) => s + (m.revenue || 0), 0);
+    const totalMonthly = detailsData?.totalRevenue || 0;
+    const totalYearly = yearlyData.reduce((s, m) => s + (m.revenue || 0), 0);
     const thisMonthEntry = yearlyData.find(m => m.month === month);
     const prevMonthEntry = yearlyData.find(m => m.month === month - 1);
-    const monthChange    = prevMonthEntry?.revenue
+    const monthChange = prevMonthEntry?.revenue
         ? (((thisMonthEntry?.revenue || 0) - prevMonthEntry.revenue) / prevMonthEntry.revenue * 100).toFixed(1)
         : null;
     const maxYearly = Math.max(...yearlyData.map(m => m.revenue || 0), 1);
@@ -119,7 +119,7 @@ export default function RevenuePage() {
                 <div className="rv-date-controls">
                     <select value={month} onChange={e => { setMonth(parseInt(e.target.value)); setCurrentPage(1); }}>
                         {[...Array(12).keys()].map(i => (
-                            <option key={i+1} value={i+1}>{MONTH_NAMES[i]}</option>
+                            <option key={i + 1} value={i + 1}>{MONTH_NAMES[i]}</option>
                         ))}
                     </select>
                     <select value={year} onChange={e => { setYear(parseInt(e.target.value)); setCurrentPage(1); }}>
@@ -143,12 +143,12 @@ export default function RevenuePage() {
                     )}
                     <div className="rv-sparkline">
                         {yearlyData.map(m => (
-                            <div key={m.month} className="rv-spark-bar-wrap" title={`${MONTH_NAMES[m.month-1]}: ${(m.revenue||0).toLocaleString('vi-VN')}₫`}>
+                            <div key={m.month} className="rv-spark-bar-wrap" title={`${MONTH_NAMES[m.month - 1]}: ${(m.revenue || 0).toLocaleString('vi-VN')}₫`}>
                                 <div
                                     className={`rv-spark-bar ${m.month === month ? 'active' : ''}`}
                                     style={{ height: `${Math.max(4, (m.revenue || 0) / maxYearly * 60)}px` }}
                                 ></div>
-                                <span className="rv-spark-label">{MONTH_NAMES[m.month-1]}</span>
+                                <span className="rv-spark-label">{MONTH_NAMES[m.month - 1]}</span>
                             </div>
                         ))}
                     </div>
@@ -181,7 +181,7 @@ export default function RevenuePage() {
                             <p className="rv-side-label">Tháng cao nhất</p>
                             <p className="rv-side-amount">
                                 {yearlyData.length > 0
-                                    ? MONTH_NAMES[yearlyData.reduce((a, b) => (a.revenue||0) > (b.revenue||0) ? a : b).month - 1]
+                                    ? MONTH_NAMES[yearlyData.reduce((a, b) => (a.revenue || 0) > (b.revenue || 0) ? a : b).month - 1]
                                     : '—'}
                             </p>
                         </div>
@@ -195,7 +195,7 @@ export default function RevenuePage() {
                     <h2>Chi tiết doanh thu</h2>
                     <div className="rv-tabs">
                         {[
-                            { key: 'daily',  label: '📆 Theo ngày' },
+                            { key: 'daily', label: '📆 Theo ngày' },
                             { key: 'weekly', label: '📅 Theo tuần' },
                             { key: 'yearly', label: '📈 Cả năm' },
                         ].map(tab => (
@@ -209,9 +209,9 @@ export default function RevenuePage() {
                         ))}
                     </div>
                 </div>
-                {viewMode === 'daily'  && renderTable(detailsData.daily,  'date',  'Ngày',   'Ngày ')}
-                {viewMode === 'weekly' && renderTable(detailsData.weekly, 'week',  'Tuần',  'Tuần ')}
-                {viewMode === 'yearly' && renderTable(yearlyData,          'month', 'Tháng', 'Tháng ')}
+                {viewMode === 'daily' && renderTable(detailsData.daily, 'date', 'Ngày', 'Ngày ')}
+                {viewMode === 'weekly' && renderTable(detailsData.weekly, 'week', 'Tuần', 'Tuần ')}
+                {viewMode === 'yearly' && renderTable(yearlyData, 'month', 'Tháng', 'Tháng ')}
             </div>
         </div>
     );

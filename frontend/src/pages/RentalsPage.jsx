@@ -9,7 +9,7 @@ export default function RentalsPage() {
     const [deletedRentals, setDeletedRentals] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const role = localStorage.getItem('userRole');
-    
+
     // Pagination & Search state
     const [searchQuery, setSearchQuery] = useState('');
     const [completedSearchQuery, setCompletedSearchQuery] = useState('');
@@ -21,14 +21,14 @@ export default function RentalsPage() {
     // Date logic for alerts
     const todayDate = new Date();
     const todayStr = todayDate.getFullYear() + '-' + String(todayDate.getMonth() + 1).padStart(2, '0') + '-' + String(todayDate.getDate()).padStart(2, '0');
-    
+
     const tomorrowDate = new Date();
     tomorrowDate.setDate(tomorrowDate.getDate() + 1);
     const tomorrowStr = tomorrowDate.getFullYear() + '-' + String(tomorrowDate.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrowDate.getDate()).padStart(2, '0');
 
     const overdueRentals = rentals.filter(r => r.expectedReturnDate < todayStr);
     const dueSoonRentals = rentals.filter(r => r.expectedReturnDate === todayStr || r.expectedReturnDate === tomorrowStr);
-    
+
     // Form state
     const [selectedProduct, setSelectedProduct] = useState('');
     const [startDate, setStartDate] = useState('');
@@ -55,7 +55,7 @@ export default function RentalsPage() {
     }, [role]);
 
     const fetchProducts = () => {
-        fetch('http://localhost:8080/api/products', { headers: getAuthHeaders() })
+        fetch('https://dress-rental-backend.onrender.com/api/products', { headers: getAuthHeaders() })
             .then(res => res.json())
             .then(data => {
                 // Cho phép lấy cả váy AVAILABLE và RENTED để nhận đặt hàng trước (Pre-order)
@@ -67,7 +67,7 @@ export default function RentalsPage() {
     };
 
     const fetchActiveRentals = () => {
-        fetch('http://localhost:8080/api/rentals/active', { headers: getAuthHeaders() })
+        fetch('https://dress-rental-backend.onrender.com/api/rentals/active', { headers: getAuthHeaders() })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setRentals(data);
@@ -76,7 +76,7 @@ export default function RentalsPage() {
     };
 
     const fetchCompletedRentals = () => {
-        fetch('http://localhost:8080/api/rentals/completed-recent', { headers: getAuthHeaders() })
+        fetch('https://dress-rental-backend.onrender.com/api/rentals/completed-recent', { headers: getAuthHeaders() })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setCompletedRentals(data);
@@ -85,7 +85,7 @@ export default function RentalsPage() {
     };
 
     const fetchDeletedRentals = () => {
-        fetch('http://localhost:8080/api/rentals/deleted', { headers: getAuthHeaders() })
+        fetch('https://dress-rental-backend.onrender.com/api/rentals/deleted', { headers: getAuthHeaders() })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setDeletedRentals(data);
@@ -95,19 +95,19 @@ export default function RentalsPage() {
 
     const handleCreateRental = async (e) => {
         e.preventDefault();
-        
+
         if (new Date(startDate) > new Date(endDate)) {
             showAlert('Ngày nhận không được lớn hơn ngày trả!', 'error');
             return;
         }
-        
+
         // 1. Gọi API kiểm tra trùng lịch (Check Availability)
         try {
-            const checkRes = await fetch(`http://localhost:8080/api/rentals/check-availability?productId=${selectedProduct}&startDate=${startDate}&endDate=${endDate}`, {
+            const checkRes = await fetch(`https://dress-rental-backend.onrender.com/api/rentals/check-availability?productId=${selectedProduct}&startDate=${startDate}&endDate=${endDate}`, {
                 headers: getAuthHeaders()
             });
             const isAvailable = await checkRes.json();
-            
+
             if (!isAvailable) {
                 showAlert('Rất tiếc! Váy này đã có người đặt trong khoảng thời gian trên. Vui lòng chọn ngày khác.', 'error');
                 return;
@@ -115,8 +115,8 @@ export default function RentalsPage() {
 
             // 2. Nếu trống lịch thì tiến hành tạo đơn
             const userId = 1; // Tạm thời hardcode admin ID, ở thực tế sẽ lấy từ token/localStorage
-            
-            const createRes = await fetch('http://localhost:8080/api/rentals', {
+
+            const createRes = await fetch('https://dress-rental-backend.onrender.com/api/rentals', {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
@@ -131,7 +131,7 @@ export default function RentalsPage() {
             });
 
             if (!createRes.ok) throw new Error('Không thể tạo lịch thuê');
-            
+
             showAlert('Tạo lịch thuê thành công!', 'success');
             setShowForm(false);
             setStartDate('');
@@ -152,14 +152,14 @@ export default function RentalsPage() {
     const handleReturnDress = async (rentalId) => {
         const isConfirmed = await showConfirmAsync('Xác nhận', 'Xác nhận khách đã trả váy này?', 'Xác nhận');
         if (!isConfirmed) return;
-        
+
         try {
-            const res = await fetch(`http://localhost:8080/api/rentals/${rentalId}/complete`, {
+            const res = await fetch(`https://dress-rental-backend.onrender.com/api/rentals/${rentalId}/complete`, {
                 method: 'PATCH',
                 headers: getAuthHeaders()
             });
             if (!res.ok) throw new Error('Không thể cập nhật trạng thái trả váy');
-            
+
             showAlert('Đã xác nhận trả váy thành công!', 'success');
             fetchActiveRentals();
             fetchCompletedRentals();
@@ -172,12 +172,12 @@ export default function RentalsPage() {
 
     const handleToggleDelivery = async (rentalId) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/rentals/${rentalId}/toggle-delivery`, {
+            const res = await fetch(`https://dress-rental-backend.onrender.com/api/rentals/${rentalId}/toggle-delivery`, {
                 method: 'PATCH',
                 headers: getAuthHeaders()
             });
             if (!res.ok) throw new Error('Không thể cập nhật trạng thái giao hàng');
-            
+
             fetchActiveRentals(); // Cập nhật lại UI ngay lập tức
         } catch (error) {
             console.error(error);
@@ -188,14 +188,14 @@ export default function RentalsPage() {
     const handleDeleteRental = async (rentalId) => {
         const isConfirmed = await showConfirmAsync('Cảnh báo', 'Bạn có chắc chắn muốn XÓA đơn này? Đơn bị xóa sẽ không được tính vào doanh thu.', 'Xóa đơn');
         if (!isConfirmed) return;
-        
+
         try {
-            const res = await fetch(`http://localhost:8080/api/rentals/${rentalId}`, {
+            const res = await fetch(`https://dress-rental-backend.onrender.com/api/rentals/${rentalId}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
             if (!res.ok) throw new Error('Không thể xóa đơn');
-            
+
             showAlert('Đã xóa đơn thành công!', 'success');
             fetchActiveRentals();
             fetchProducts();
@@ -212,9 +212,9 @@ export default function RentalsPage() {
     };
 
     const searchKeyword = removeAccents(searchQuery);
-    
-    const filteredActiveRentals = rentals.filter(r => 
-        removeAccents(r.product?.productCode).includes(searchKeyword) || 
+
+    const filteredActiveRentals = rentals.filter(r =>
+        removeAccents(r.product?.productCode).includes(searchKeyword) ||
         removeAccents(r.product?.productName).includes(searchKeyword) ||
         removeAccents(r.customerName).includes(searchKeyword)
     );
@@ -225,8 +225,8 @@ export default function RentalsPage() {
 
     const completedSearchKeyword = removeAccents(completedSearchQuery);
 
-    const filteredCompletedRentals = completedRentals.filter(r => 
-        removeAccents(r.product?.productCode).includes(completedSearchKeyword) || 
+    const filteredCompletedRentals = completedRentals.filter(r =>
+        removeAccents(r.product?.productCode).includes(completedSearchKeyword) ||
         removeAccents(r.product?.productName).includes(completedSearchKeyword) ||
         removeAccents(r.customerName).includes(completedSearchKeyword) ||
         (r.receiveDate || '').includes(completedSearchQuery)
@@ -331,7 +331,7 @@ export default function RentalsPage() {
                                 ))}
                             </select>
                             {selectedProduct && products.find(p => p.id === parseInt(selectedProduct)) && (
-                                <div style={{marginTop: '8px', fontSize: '13px', color: '#5b21b6', fontWeight: '500'}}>
+                                <div style={{ marginTop: '8px', fontSize: '13px', color: '#5b21b6', fontWeight: '500' }}>
                                     Tiền cọc yêu cầu: {Number(products.find(p => p.id === parseInt(selectedProduct)).depositAmount || 0).toLocaleString('vi-VN')} ₫
                                 </div>
                             )}
@@ -397,13 +397,13 @@ export default function RentalsPage() {
                                         <tr key={r.id} className={`${isOverdue ? 'row-overdue' : ''} clickable-row`} onClick={() => setSelectedRentalDetails(r)}>
                                             <td><span className="order-id">#{r.id}</span></td>
                                             <td>
-                                                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                                                    {r.product?.imageUrl ? <img src={`http://localhost:8080${r.product.imageUrl}`} alt="Dress" style={{width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0'}} /> : <div style={{width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0'}} />}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    {r.product?.imageUrl ? <img src={`https://dress-rental-backend.onrender.com${r.product.imageUrl}`} alt="Dress" style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0' }} /> : <div style={{ width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0' }} />}
                                                     <span className="code-badge">{r.product?.productCode}</span>
                                                 </div>
                                             </td>
                                             <td>{r.product?.productName}</td>
-                                            <td><strong style={{color: '#1e293b'}}>{r.customerName || '—'}</strong></td>
+                                            <td><strong style={{ color: '#1e293b' }}>{r.customerName || '—'}</strong></td>
                                             <td>{r.receiveDate}</td>
                                             <td>
                                                 <span className={isOverdue ? 'due-date overdue' : 'due-date'}>
@@ -462,13 +462,13 @@ export default function RentalsPage() {
                                     <tr key={r.id} className="clickable-row" onClick={() => setSelectedRentalDetails(r)}>
                                         <td><span className="order-id">#{r.id}</span></td>
                                         <td>
-                                            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                                                {r.product?.imageUrl ? <img src={`http://localhost:8080${r.product.imageUrl}`} alt="Dress" style={{width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0'}} /> : <div style={{width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0'}} />}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                {r.product?.imageUrl ? <img src={`https://dress-rental-backend.onrender.com${r.product.imageUrl}`} alt="Dress" style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0' }} /> : <div style={{ width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0' }} />}
                                                 <span className="code-badge">{r.product?.productCode}</span>
                                             </div>
                                         </td>
                                         <td>{r.product?.productName}</td>
-                                        <td><strong style={{color: '#1e293b'}}>{r.customerName || '—'}</strong></td>
+                                        <td><strong style={{ color: '#1e293b' }}>{r.customerName || '—'}</strong></td>
                                         <td>{r.receiveDate}</td>
                                         <td>{r.actualReturnDate}</td>
                                     </tr>
@@ -535,19 +535,19 @@ export default function RentalsPage() {
                         <div className="modal-header">
                             <h2>
                                 Chi Tiết Đơn Hàng #{selectedRentalDetails.id}
-                                {selectedRentalDetails.actualReturnDate && <span className="status-chip done" style={{marginLeft: '10px', fontSize: '11px'}}>✓ Đã hoàn thành</span>}
+                                {selectedRentalDetails.actualReturnDate && <span className="status-chip done" style={{ marginLeft: '10px', fontSize: '11px' }}>✓ Đã hoàn thành</span>}
                             </h2>
                             <button className="close-btn" onClick={() => setSelectedRentalDetails(null)}>✕</button>
                         </div>
                         <div className="modal-body" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                             <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
-                                {selectedRentalDetails.product?.imageUrl ? <img src={`http://localhost:8080${selectedRentalDetails.product.imageUrl}`} alt="Dress" style={{width: '70px', height: '70px', borderRadius: '8px', objectFit: 'cover'}} /> : <div style={{width: '70px', height: '70px', backgroundColor: '#e2e8f0', borderRadius: '8px'}} />}
+                                {selectedRentalDetails.product?.imageUrl ? <img src={`https://dress-rental-backend.onrender.com${selectedRentalDetails.product.imageUrl}`} alt="Dress" style={{ width: '70px', height: '70px', borderRadius: '8px', objectFit: 'cover' }} /> : <div style={{ width: '70px', height: '70px', backgroundColor: '#e2e8f0', borderRadius: '8px' }} />}
                                 <div>
                                     <strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>{selectedRentalDetails.product?.productName}</strong>
                                     <span className="code-badge">{selectedRentalDetails.product?.productCode}</span>
                                 </div>
                             </div>
-                            
+
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                                 <div>
                                     <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '4px' }}>👤 Khách hàng</span>
@@ -560,7 +560,7 @@ export default function RentalsPage() {
                                 <div>
                                     <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '4px' }}>📅 Lịch trình</span>
                                     <span style={{ fontSize: '14px', fontWeight: '500' }}>
-                                        Nhận: {selectedRentalDetails.receiveDate}<br/>
+                                        Nhận: {selectedRentalDetails.receiveDate}<br />
                                         Trả: {selectedRentalDetails.actualReturnDate ? selectedRentalDetails.actualReturnDate : selectedRentalDetails.expectedReturnDate}
                                     </span>
                                 </div>
@@ -576,7 +576,7 @@ export default function RentalsPage() {
                                     <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px' }}>📦 Trạng thái giao hàng</span>
                                     <button
                                         className={`delivery-toggle ${selectedRentalDetails.deliveryStatus === 'DELIVERED' ? 'delivered' : 'booked'}`}
-                                        onClick={() => { handleToggleDelivery(selectedRentalDetails.id); setSelectedRentalDetails({...selectedRentalDetails, deliveryStatus: selectedRentalDetails.deliveryStatus === 'DELIVERED' ? 'BOOKED' : 'DELIVERED'}); }}
+                                        onClick={() => { handleToggleDelivery(selectedRentalDetails.id); setSelectedRentalDetails({ ...selectedRentalDetails, deliveryStatus: selectedRentalDetails.deliveryStatus === 'DELIVERED' ? 'BOOKED' : 'DELIVERED' }); }}
                                         style={{ width: '100%', padding: '10px' }}
                                     >
                                         {selectedRentalDetails.deliveryStatus === 'DELIVERED' ? '📦 Đã giao hàng' : '⏳ Đang chờ lấy / Đã đặt'}

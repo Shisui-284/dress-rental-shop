@@ -17,7 +17,7 @@ export default function LoginPage() {
 
         try {
             // Gọi API mới tạo để lấy thông tin user
-            const response = await axios.get('http://localhost:8080/api/auth/me', {
+            const response = await axios.get('https://dress-rental-backend.onrender.com/api/auth/me', {
                 auth: {
                     username: username,
                     password: password

@@ -16,13 +16,13 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // API Lấy danh sách: GET http://localhost:8080/api/products
+    // API Lấy danh sách: GET https://dress-rental-backend.onrender.com/api/products
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllActiveProducts();
     }
 
-    // API Thêm mới: POST http://localhost:8080/api/products
+    // API Thêm mới: POST https://dress-rental-backend.onrender.com/api/products
     @PostMapping
     public org.springframework.http.ResponseEntity<?> createProduct(@RequestBody Product product) {
         try {
