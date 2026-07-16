@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNotification } from '../components/NotificationContext';
 import './ProductsPage.css';
+import heroImg from '../assets/dress_hero_fashion.png';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState([]);
@@ -130,7 +131,7 @@ export default function ProductsPage() {
                     {/* RIGHT IMAGE */}
                     <div className="hero-right">
                         <img
-                            src="/src/assets/dress_hero_fashion.png"
+                            src={heroImg}
                             alt="Váy thời trang"
                             className="hero-model-img"
                             onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&h=700&fit=crop'; }}

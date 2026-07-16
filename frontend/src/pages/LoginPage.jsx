@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './LoginPage.css'; // Chúng ta sẽ tạo file CSS này ở bước sau
+import './LoginPage.css'; 
+import loginBg from '../assets/login_dress_bg.png';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -45,7 +46,7 @@ export default function LoginPage() {
             <div className="login-container">
                 {/* Left side: Image */}
                 <div className="login-image-section">
-                    <img src="/src/assets/login_dress_bg.png" alt="Elegant Dress" className="cover-image" />
+                    <img src={loginBg} alt="Elegant Dress" className="cover-image" />
                 </div>
 
                 {/* Right side: Form */}
