@@ -398,7 +398,7 @@ export default function RentalsPage() {
                                             <td><span className="order-id">#{r.id}</span></td>
                                             <td>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    {r.product?.imageUrl ? <img src={`https://dress-rental-backend.onrender.com${r.product.imageUrl}`} alt="Dress" style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0' }} /> : <div style={{ width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0' }} />}
+                                                {r.product?.imageUrl ? <img src={r.product.imageUrl} alt="Dress" style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/40x40/f5f5f5/999?text=!' }} /> : <div style={{ width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0' }} />}
                                                     <span className="code-badge">{r.product?.productCode}</span>
                                                 </div>
                                             </td>
@@ -463,7 +463,7 @@ export default function RentalsPage() {
                                         <td><span className="order-id">#{r.id}</span></td>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                {r.product?.imageUrl ? <img src={`https://dress-rental-backend.onrender.com${r.product.imageUrl}`} alt="Dress" style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0' }} /> : <div style={{ width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0' }} />}
+                                                {r.product?.imageUrl ? <img src={r.product.imageUrl} alt="Dress" style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #e2e8f0' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/40x40/f5f5f5/999?text=!' }} /> : <div style={{ width: '40px', height: '40px', backgroundColor: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0' }} />}
                                                 <span className="code-badge">{r.product?.productCode}</span>
                                             </div>
                                         </td>
@@ -541,7 +541,7 @@ export default function RentalsPage() {
                         </div>
                         <div className="modal-body" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                             <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
-                                {selectedRentalDetails.product?.imageUrl ? <img src={`https://dress-rental-backend.onrender.com${selectedRentalDetails.product.imageUrl}`} alt="Dress" style={{ width: '70px', height: '70px', borderRadius: '8px', objectFit: 'cover' }} /> : <div style={{ width: '70px', height: '70px', backgroundColor: '#e2e8f0', borderRadius: '8px' }} />}
+                                {selectedRentalDetails.product?.imageUrl ? <img src={selectedRentalDetails.product.imageUrl} alt="Dress" style={{ width: '70px', height: '70px', borderRadius: '8px', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/70x70/f5f5f5/999?text=Lỗi' }} /> : <div style={{ width: '70px', height: '70px', backgroundColor: '#e2e8f0', borderRadius: '8px' }} />}
                                 <div>
                                     <strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>{selectedRentalDetails.product?.productName}</strong>
                                     <span className="code-badge">{selectedRentalDetails.product?.productCode}</span>

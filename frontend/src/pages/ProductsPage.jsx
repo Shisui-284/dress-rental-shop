@@ -33,22 +33,7 @@ export default function ProductsPage() {
             .catch(err => console.error('Lỗi khi tải sản phẩm:', err));
     };
 
-    const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            const res = await fetch('https://dress-rental-backend.onrender.com/api/upload', {
-                method: 'POST',
-                headers: { 'Authorization': 'Basic ' + localStorage.getItem('authToken') },
-                body: formData
-            });
-            const data = await res.json();
-            setNewProduct({ ...newProduct, imageUrl: data.imageUrl });
-            showAlert('Tải ảnh thành công!', 'success');
-        } catch { showAlert('Lỗi tải ảnh!', 'error'); }
-    };
+    // Bỏ handleFileChange vì sẽ nhập link trực tiếp
 
     const handleAddProduct = (e) => {
         e.preventDefault();
@@ -220,10 +205,15 @@ export default function ProductsPage() {
                             <input type="number" placeholder="Giá thuê (VNĐ)" required value={newProduct.rentalPrice} onChange={e => setNewProduct({ ...newProduct, rentalPrice: e.target.value })} />
                             <input type="number" placeholder="Tiền cọc (VNĐ)" required value={newProduct.depositAmount} onChange={e => setNewProduct({ ...newProduct, depositAmount: e.target.value })} />
                         </div>
-                        <div className="file-upload-wrapper">
-                            <input type="file" accept="image/*" onChange={handleFileChange} id="file-upload" className="file-input" />
-                            <label htmlFor="file-upload" className="file-label">📸 Tải ảnh lên</label>
-                            {newProduct.imageUrl && <img src={`https://dress-rental-backend.onrender.com${newProduct.imageUrl}`} alt="preview" className="image-preview" />}
+                        <div className="file-upload-wrapper" style={{ display: 'flex', gap: '16px' }}>
+                            <input
+                                type="text"
+                                placeholder="Dán link URL ảnh sản phẩm vào đây..."
+                                value={newProduct.imageUrl}
+                                onChange={e => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                                style={{ flex: 1, padding: '12px 14px', border: '1.5px solid #e0e0e0', outline: 'none', background: 'white', fontFamily: 'inherit', fontSize: '14px' }}
+                            />
+                            {newProduct.imageUrl && <img src={newProduct.imageUrl} alt="preview" className="image-preview" onError={(e) => { e.target.src = 'https://via.placeholder.com/58x58/f5f5f5/999?text=Lỗi' }} />}
                         </div>
                         <button type="submit" className="submit-product-btn">THÊM VÀO BỘ SƯU TẬP</button>
                     </form>
@@ -238,8 +228,9 @@ export default function ProductsPage() {
                         <div key={p.id} className="elegant-product-card">
                             <div className="card-image-wrapper">
                                 <img
-                                    src={p.imageUrl ? `https://dress-rental-backend.onrender.com${p.imageUrl}` : 'https://via.placeholder.com/400x600/f5f5f5/999?text=Chưa+có+ảnh'}
+                                    src={p.imageUrl || 'https://via.placeholder.com/400x600/f5f5f5/999?text=Chưa+có+ảnh'}
                                     alt={p.productName}
+                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400x600/f5f5f5/999?text=Lỗi+ảnh' }}
                                 />
                                 <div className="card-overlay">
                                     <button className="delete-btn" onClick={() => handleDeleteProduct(p.id)}>

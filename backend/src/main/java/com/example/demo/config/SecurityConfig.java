@@ -3,7 +3,7 @@ package com.example.demo.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // Kéo thư viện này vào
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,12 +26,12 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Kích hoạt cho phép cấu hình CORS bên dưới
                 .csrf(csrf -> csrf.disable()) // Tắt bảo vệ CSRF vì chúng ta dùng API với React
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/uploads/**").permitAll() // Cho phép xem ảnh không cần đăng nhập
-                        .requestMatchers("/api/revenue/**", "/api/users/**").hasRole("ADMIN") // Chỉ ADMIN mới được xem doanh thu và quản lý nhân viên
-                        .anyRequest().authenticated() // Mọi request khác đều phải đăng nhập
-                )
+                        // QUAN TRỌNG: Mở thêm đường dẫn đăng nhập (/api/auth/**) để frontend có thể gửi
+                        // tài khoản mật khẩu
+                        .requestMatchers("/uploads/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/api/revenue/**", "/api/users/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 .httpBasic(basic -> basic.authenticationEntryPoint((request, response, authException) -> {
-                    // Tắt popup đăng nhập mặc định của trình duyệt
                     response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 }));
 
@@ -42,14 +42,18 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Cho phép frontend ở cổng 5173 gọi sang
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+
+        // SỬA Ở ĐÂY: Thêm địa chỉ Vercel vào danh sách cho phép (giữ lại localhost để
+        // test ở nhà)
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://dress-rental-shop.vercel.app",
+                "http://localhost:5173"));
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true); // Cho phép gửi kèm thông tin đăng nhập
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Áp dụng giấy thông hành này cho mọi đường dẫn API (/**)
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
