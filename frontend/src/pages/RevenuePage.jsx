@@ -28,14 +28,26 @@ export default function RevenuePage() {
     const fetchDetails = async () => {
         try {
             const res = await fetch(`http://localhost:8080/api/revenue/details?year=${year}&month=${month}`, { headers: getAuthHeaders() });
-            setDetailsData(await res.json());
+            const data = await res.json();
+            if (res.ok) {
+                setDetailsData(data);
+            } else {
+                console.error("API error details:", data);
+                setDetailsData({ totalRevenue: 0, daily: [], weekly: [] });
+            }
         } catch (e) { console.error(e); }
     };
 
     const fetchYearly = async () => {
         try {
             const res = await fetch(`http://localhost:8080/api/revenue/yearly?year=${year}`, { headers: getAuthHeaders() });
-            setYearlyData(await res.json());
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setYearlyData(data);
+            } else {
+                console.error("API error yearly:", data);
+                setYearlyData([]);
+            }
         } catch (e) { console.error(e); }
     };
 
